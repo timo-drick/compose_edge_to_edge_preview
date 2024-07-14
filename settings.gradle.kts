@@ -1,4 +1,4 @@
-rootProject.name = "Compose libraries"
+rootProject.name = "Compose edge to edge preview library"
 
 pluginManagement {
     repositories {

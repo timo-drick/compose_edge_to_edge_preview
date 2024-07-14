@@ -142,9 +142,6 @@ fun InsetsTest() {
                     animationSpec = tween(2000)
                 )
                 val animSize = 150.dp
-                BoxWithConstraints {
-
-                }
                 Box(
                     modifier = Modifier
                         .onGloballyPositioned { }
