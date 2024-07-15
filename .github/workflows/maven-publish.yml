@@ -28,7 +28,7 @@ jobs:
     - name: Publish package
       run: ./gradlew :edge_to_edge_preview_lib:publishReleasePublicationToOSSRHRepository
       env:
-        OSSRH_USER: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-        OSSRH_PASSWORD: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        OSSRH_USER: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        OSSRH_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
         SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
