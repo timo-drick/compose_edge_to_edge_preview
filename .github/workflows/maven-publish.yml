@@ -1,6 +1,6 @@
-# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# This workflow will build a package using Gradle and then publish it to Maven Central when a release is created
 
-name: Publish package to GitHub Packages
+name: Publish package to Maven Central
 
 on:
   release:
@@ -31,3 +31,4 @@ jobs:
         OSSRH_USER: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
         OSSRH_PASSWORD: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
