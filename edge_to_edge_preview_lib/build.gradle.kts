@@ -16,7 +16,7 @@ plugins {
 val mavenGroupId = "de.drick.compose"
 val mavenArtifactId = "edge-to-edge-preview"
 
-val mavenVersion = "0.3.1"
+val mavenVersion = "0.4.0"
 
 android {
     namespace = "de.drick.compose.edgetoedgepreviewlib"
@@ -196,7 +196,9 @@ publishing {
     }
 }
 
-/*signing {
-    useGpgCmd() //TODO get it running on github build server
+signing {
+    val signingKey = System.getenv("SIGNING_KEY")
+    val signingPassword = System.getenv("SIGNING_PASSWORD")
+    useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
-}*/
+}
