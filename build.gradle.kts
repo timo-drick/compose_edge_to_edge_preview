@@ -1,9 +1,10 @@
 plugins {
     id("com.android.application") version Versions.androidPlugin apply false
     id("com.android.library") version Versions.androidPlugin apply false
-    id("org.jetbrains.kotlin.android") version Versions.kotlin apply false
-    id("org.jetbrains.kotlin.plugin.compose") version Versions.kotlin apply false
+    kotlin("android") version Versions.kotlin apply false
+    kotlin("plugin.compose") version Versions.kotlin apply false
     kotlin("plugin.serialization") version Versions.kotlin
+    id("com.android.compose.screenshot") version Versions.composeScreenshot apply false
 
     id("com.github.ben-manes.versions") version Versions.benManesPlugin
 }

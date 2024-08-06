@@ -1,5 +1,6 @@
 package de.drick.compose.edgetoedgepreview.layout_experiments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -14,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.composed
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalConfiguration
@@ -39,8 +39,8 @@ data class PaddingPx(
 
 @Composable
 fun SmartInsetsProvider(
-    modifier: Modifier = Modifier,
     insets: WindowInsets,
+    modifier: Modifier = Modifier,
     content: @Composable @UiComposable (insetsPadding: PaddingValues) -> Unit
 ) {
     val density = LocalDensity.current
@@ -139,6 +139,7 @@ fun windowSize(ctx: Context): IntSize {
 /**
  * This modifier works but not for animations. Not sure why
  */
+@SuppressLint("ComposeComposableModifier")
 @Composable
 fun Modifier.consumeNonOverlappingInsets(): Modifier {
     val density = LocalDensity.current

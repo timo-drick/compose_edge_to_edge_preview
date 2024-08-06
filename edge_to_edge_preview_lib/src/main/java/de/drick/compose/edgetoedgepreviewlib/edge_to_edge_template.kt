@@ -33,8 +33,9 @@ class NavigationPreviewProvider : PreviewParameterProvider<NavigationMode> {
 }
 
 enum class NavigationMode {
-    Gesture,
-    ThreeButton
+    ThreeButton,
+    TwoButton,
+    Gesture
 }
 
 @Composable
@@ -48,7 +49,9 @@ fun EdgeToEdgeTemplate(
     // Setting status or navigation bars visibility to false can be used to test
     // code that uses WindowInsets.systemBarsIgnoringVisibility
     isStatusBarVisible: Boolean = true,
+    isStatusBarContrastEnforced: Boolean = false,
     isNavigationBarVisible: Boolean = true,
+    isNavigationBarContrastEnforced: Boolean = true,
     useHiddenApiHack: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -166,7 +169,8 @@ fun EdgeToEdgeTemplate(
                     },
                 isVertical = isLandscape,
                 isDarkMode = isDarkMode,
-                navMode = navMode
+                navMode = navMode,
+                alpha = if (isNavigationBarContrastEnforced) 0.5f else 1f
             )
         }
     }

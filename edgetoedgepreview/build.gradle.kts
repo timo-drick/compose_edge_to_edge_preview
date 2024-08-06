@@ -1,7 +1,9 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("android")
+    kotlin("plugin.compose")
+    kotlin("plugin.serialization")
+    id("com.android.compose.screenshot")
 }
 
 android {
@@ -38,6 +40,14 @@ android {
         compose = true
     }
 
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -58,14 +68,19 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material3.adaptive:adaptive:1.0.0-beta04")
+    implementation("androidx.compose.material3.adaptive:adaptive:${Versions.composeAdaptive}")
     implementation("androidx.compose.material:material-icons-extended")
 
+    lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}")
+
     //Testing
     testImplementation("junit:junit:${Versions.junit}")
+    testImplementation("org.robolectric:robolectric:${Versions.robolectric}")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
     androidTestImplementation(composeBom)

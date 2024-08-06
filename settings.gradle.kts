@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 
 include(":edgetoedgepreview")
 include(":edge_to_edge_preview_lib")
+include(":devicerecording")
