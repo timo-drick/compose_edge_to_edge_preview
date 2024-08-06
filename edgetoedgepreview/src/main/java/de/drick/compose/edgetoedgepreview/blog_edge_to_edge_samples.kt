@@ -1,5 +1,3 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-
 package de.drick.compose.edgetoedgepreview
 
 import androidx.compose.foundation.Canvas
@@ -61,17 +59,18 @@ import kotlin.math.roundToInt
     widthDp = 411,
     heightDp = 838
 )
-annotation class GridPreviewScreen
+annotation class GridScreenPreview
 
 @Preview(
     widthDp = 838,
     heightDp = 411
 )
-annotation class GridPreviewLandscapeScreen
+annotation class GridLandscapeScreenPreview
 
 
 @Composable
 fun BaseLayout(
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     EdgeToEdgeTemplate(
@@ -89,7 +88,7 @@ fun BaseLayout(
     }
 }
 
-@GridPreviewScreen
+@GridScreenPreview
 @Composable
 private fun TestLayoutNoPadding() {
     BaseLayout {
@@ -104,9 +103,9 @@ private fun TestLayoutNoPadding() {
     }
 }
 
-@GridPreviewScreen
+@GridScreenPreview
 @Composable
-fun TestLayoutSimplePadding() {
+private fun TestLayoutSimplePadding() {
     BaseLayout {
         Column(
             Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
@@ -124,9 +123,9 @@ fun TestLayoutSimplePadding() {
     }
 }
 
-@GridPreviewScreen
+@GridScreenPreview
 @Composable
-fun TestLayoutListContentPaddingNaive() {
+private fun TestLayoutListContentPaddingNaive() {
     BaseLayout {
         Column(
             modifier = Modifier
@@ -162,9 +161,9 @@ fun TestLayoutListContentPaddingNaive() {
 }
 
 
-@GridPreviewScreen
+@GridScreenPreview
 @Composable
-fun TestLayoutListContentPadding() {
+private fun TestLayoutListContentPadding() {
     BaseLayout {
         Column(
             modifier = Modifier
@@ -204,9 +203,9 @@ fun TestLayoutListContentPadding() {
     }
 }
 
-@GridPreviewLandscapeScreen
+@GridLandscapeScreenPreview
 @Composable
-fun TestLandscapeLayoutListContentPadding() {
+private fun TestLandscapeLayoutListContentPadding() {
     BaseLayout {
         Row(
             modifier = Modifier
@@ -252,9 +251,9 @@ fun TestLandscapeLayoutListContentPadding() {
     }
 }
 
-@GridPreviewLandscapeScreen
+@GridLandscapeScreenPreview
 @Composable
-fun TestWindowInsetsAll() {
+private fun TestWindowInsetsAll() {
     BaseLayout {
         SplitLayoutVerticalNaive(
             modifier = Modifier.background(Color.LightGray),
@@ -280,7 +279,7 @@ fun TestWindowInsetsAll() {
 
 @Composable
 fun ItemList(
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     TestComponent(
         modifier = modifier.background(bgStripedGrey),
@@ -309,8 +308,8 @@ private val bgStripedGrey = Brush.linearGradient(
 
 @Composable
 fun ItemListContentPadding(
-    modifier: Modifier,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
         TestComponent(
@@ -395,9 +394,9 @@ fun insetsExcludingConsumed(insets: WindowInsets): WindowInsets {
 
 @Composable
 fun TestComponentWindowInsets(
-    modifier: Modifier,
-    innerModifier: Modifier = Modifier,
     title: String,
+    modifier: Modifier = Modifier,
+    innerModifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.headlineLarge,
     rotatedText: Boolean = false,
     windowInsets: WindowInsets = WindowInsets.safeDrawing,
@@ -427,8 +426,8 @@ fun TestComponentWindowInsets(
 
 @Composable
 fun TestComponent(
-    modifier: Modifier,
     title: String,
+    modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.headlineLarge,
     rotatedText: Boolean = false,
     childContent: @Composable (BoxScope.() -> Unit)? = null

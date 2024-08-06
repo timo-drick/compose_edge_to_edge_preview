@@ -29,7 +29,7 @@ annotation class SampleBlogPreviews
 
 @SampleBlogPreviews
 @Composable
-fun PreviewEdgeToEdgePortrait() {
+private fun PreviewEdgeToEdgePortrait() {
     EdgeToEdgeTemplate(
         navMode = NavigationMode.ThreeButton,
         cameraCutoutMode = CameraCutoutMode.End,
@@ -41,7 +41,7 @@ fun PreviewEdgeToEdgePortrait() {
 
 @SampleBlogPreviews
 @Composable
-fun PreviewEdgeToEdgePortrait2() {
+private fun PreviewEdgeToEdgePortrait2() {
     EdgeToEdgeTemplate(
         navMode = NavigationMode.Gesture,
         cameraCutoutMode = CameraCutoutMode.Middle,
@@ -53,7 +53,7 @@ fun PreviewEdgeToEdgePortrait2() {
 
 @SampleBlogPreviews
 @Composable
-fun PreviewEdgeToEdgePortrait3() {
+private fun PreviewEdgeToEdgePortrait3() {
     EdgeToEdgeTemplate(
         navMode = NavigationMode.Gesture,
         cameraCutoutMode = CameraCutoutMode.Middle,
@@ -65,7 +65,7 @@ fun PreviewEdgeToEdgePortrait3() {
 }
 
 @Composable
-private fun PreviewContentAppBar() {
+fun PreviewContentAppBar() {
     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         SampleLandscapeContentAppBar()
     } else {

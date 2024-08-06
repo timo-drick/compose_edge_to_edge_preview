@@ -4,8 +4,8 @@ import java.util.Properties
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("android")
+    kotlin("plugin.compose")
     id("maven-publish")
     id("signing")
     //id("com.gradleup.nmcp").version("0.0.4")
