@@ -170,11 +170,11 @@ fun InsetsTest(modifier: Modifier = Modifier) {
                     InsetValues(WindowInsets.tappableElement)
                     InsetValues(WindowInsets.systemGestures)
                     InsetValues(WindowInsets.waterfall)
-                    Spacer(
+                    /*Spacer(
                         modifier = Modifier
                             .testTag("last item")
                             .windowInsetsBottomHeight(WindowInsets.safeDrawing)
-                    )
+                    )*/
                 }
                 var animateStart by remember { mutableStateOf(false) }
                 val detailVisible by animateFloatAsState(

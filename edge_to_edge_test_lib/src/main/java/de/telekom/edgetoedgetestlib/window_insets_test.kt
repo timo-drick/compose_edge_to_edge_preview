@@ -1,8 +1,7 @@
-package de.drick.compose.edgetoedgepreview
+package de.telekom.edgetoedgetestlib
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.runtime.Composable
@@ -13,9 +12,7 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -24,42 +21,57 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
-import androidx.compose.ui.test.captureToImage
-import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.io.PlatformTestStorageRegistry
 
-val WindowInsetsKey = SemanticsPropertyKey<RecordedInsets>("WindowInsets")
+val WindowInsetsKey = SemanticsPropertyKey<TestWindowInsets>("WindowInsets")
 var SemanticsPropertyReceiver.windowInsets by WindowInsetsKey
 
+/**
+ * Place this in your composable that
+ * you want to test.
+ */
 @SuppressLint("ComposeModifierMissing")
 @Composable
 fun SemanticsWindowInsetsAnchor() {
-    val recordedInsets = recordInsets()
+    val insets = getTestWindowInsets()
     Spacer(modifier = Modifier.semantics {
-        windowInsets = recordedInsets
+        windowInsets = insets
     })
 }
 
-fun SemanticsNodeInteraction.performScrollToBottom(): SemanticsNodeInteraction {
-    val node = fetchSemanticsNode()
-    val maxValue = node.config.getOrNull(SemanticsProperties.VerticalScrollAxisRange)?.maxValue?.invoke()
-    checkNotNull(maxValue)
-    performSemanticsAction(SemanticsActions.ScrollBy) {
-        it.invoke(0f, maxValue)
+fun SemanticsNode.findWindowInsets(): TestWindowInsets? =
+    root?.semanticsOwner?.rootSemanticsNode?.searchChildren()
+private fun SemanticsNode.searchChildren(): TestWindowInsets? {
+    children.forEach {
+        return it.config.getOrElseNullable(WindowInsetsKey, defaultValue = { null })
+            ?: it.searchChildren() //Recurse search
     }
-    return this
+    return null //Anchor not found!
+}
+
+fun findTraversalGroupNode(node: SemanticsNode): SemanticsNode? {
+    val isTraversalGroup = node.config.getOrElse(SemanticsProperties.IsTraversalGroup, defaultValue = { false })
+    return if (isTraversalGroup) {
+        node
+    } else {
+        node.parent?.let {
+            findTraversalGroupNode(it)
+        }
+    }
 }
 
 fun checkOverlap(
     @InsetsType type: Int,
-    recordedInsets: RecordedInsets,
+    recordedInsets: TestWindowInsets,
     bounds: Rect,
     sides: WindowInsetsSides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
-): List<InsetEntry> {
+): List<TestInsetEntry> {
     val windowSize = Size(recordedInsets.windowWidth.toFloat(), recordedInsets.windowHeight.toFloat())
     return recordedInsets.insetList
         .filter { it.isVisible }
@@ -75,26 +87,12 @@ fun checkOverlap(
         }
 }
 
-fun SemanticsNode.findWindowInsets(): RecordedInsets? {
-    children.forEach {
-        return it.config.getOrElseNullable(WindowInsetsKey, defaultValue = { null })
-            ?: it.findWindowInsets()
-    }
-    return null
-}
-
-/*fun SemanticsMatcher.Companion.windowInsets(): SemanticsMatcher = SemanticsMatcher("Windows inset matcher") {
-    val recordedInsets = it.root?.semanticsOwner?.rootSemanticsNode?.findWindowInsets()
-    checkNotNull(recordedInsets) { "SemanticsWindowInsetsAnchor not found in semantics hierarchy" }
-    checkOverlap(recordedInsets, it.boundsInWindow)
-}*/
-
 private fun createOverlapScreenShot(
     fileName: String,
     screenShotRaw: Bitmap,
     insetBounds: List<Rect>,
     bounds: Rect
-): Uri {
+) {
     val screenShot = screenShotRaw.copy(screenShotRaw.config, true)
     Canvas(screenShot.asImageBitmap()).apply {
         val paint = Paint().apply {
@@ -115,9 +113,7 @@ private fun createOverlapScreenShot(
             drawRect(intersection, paintFill)
         }
     }
-    val platformTestStorage = PlatformTestStorageRegistry.getInstance()
     screenShot.writeToTestStorage(fileName)
-    return platformTestStorage.getOutputFileUri(fileName)
 }
 
 fun SemanticsNodeInteraction.assertWindowInsets(
@@ -130,9 +126,8 @@ fun SemanticsNodeInteraction.assertWindowInsets(
         errorMessageOnFail = messagePrefixOnError() + "\n" + errorMessageOnFail
     }
     val node = fetchSemanticsNode(errorMessageOnFail)
-    val recordedInsets = node.root?.semanticsOwner?.rootSemanticsNode?.findWindowInsets()
-    //TODO report this error
-    checkNotNull(recordedInsets) { "SemanticsWindowInsetsAnchor not found in semantics hierarchy" }
+    val recordedInsets = node.findWindowInsets()
+    checkNotNull(recordedInsets) { "SemanticsWindowInsetsAnchor not found in semantics hierarchy!" }
     val instrumentation = InstrumentationRegistry.getInstrumentation()
 
     val overlapInsets = checkOverlap(insetType, recordedInsets, node.boundsInWindow)
@@ -145,46 +140,30 @@ fun SemanticsNodeInteraction.assertWindowInsets(
         }
         val fileName = "screenshot_overlap_${node.id}"
         val screenShotRaw = instrumentation.uiAutomation.takeScreenshot()
-        val uri = createOverlapScreenShot(fileName, screenShotRaw, overlappingBounds, node.boundsInWindow)
+        createOverlapScreenShot(fileName, screenShotRaw, overlappingBounds, node.boundsInWindow)
         val message = buildString {
             append(buildGeneralErrorMessage(errorMessageOnFail, this@assertWindowInsets, node))
             appendLine()
             val overlappingInsetTypes = overlapInsets.joinToString { getNameFromWindowInsetType(it.type) }
             appendLine("[$overlappingInsetTypes] overlap with node!")
-            appendLine("screenshot: $uri")
         }
         throw AssertionError(message)
     }
-    /*if (!matcher.matches(node)) {
-        throw AssertionError(buildGeneralErrorMessage(errorMessageOnFail, selector, node))
-    }*/
     return this
 }
 
 fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
     @InsetsType insetType: Int,
-    root: SemanticsNodeInteraction,
 ): SemanticsNodeInteractionCollection {
     val insetName = getNameFromWindowInsetType(insetType)
     val errorOnFail = "Failed to assertAllWindowInsets($insetName)"
     val nodes = fetchSemanticsNodes(errorMessageOnFail = errorOnFail)
-    val recordedInsets = nodes.first().root?.semanticsOwner?.rootSemanticsNode?.findWindowInsets()
-    //TODO report this error
-    checkNotNull(recordedInsets) { "SemanticsWindowInsetsAnchor not found in semantics hierarchy" }
+    val windowInsets = nodes.first().findWindowInsets()
+    checkNotNull(windowInsets) { "SemanticsWindowInsetsAnchor not found in semantics hierarchy" }
     val instrumentation = InstrumentationRegistry.getInstrumentation()
     val message = buildString {
         nodes.forEach { node ->
             //Search for traversal true parent
-            fun findTraversalGroupNode(node: SemanticsNode): SemanticsNode? {
-                val isTraversalGroup = node.config.getOrElse(SemanticsProperties.IsTraversalGroup, defaultValue = { false })
-                return if (isTraversalGroup) {
-                    node
-                } else {
-                    node.parent?.let {
-                        findTraversalGroupNode(it)
-                    }
-                }
-            }
             val traversalGroupNode = findTraversalGroupNode(node)
             var sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
             var scrollPosition = 0f
@@ -199,19 +178,20 @@ fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
                         sides += WindowInsetsSides.Bottom
                 }
             }
-            val overlapInsets = checkOverlap(insetType, recordedInsets, node.boundsInWindow, sides)
+            val overlapInsets = checkOverlap(insetType, windowInsets, node.boundsInWindow, sides)
             if (overlapInsets.isNotEmpty()) {
                 val overlappingBounds = overlapInsets.flatMap {
                     it.insetVisible.toBounds(
                         Size(
-                            recordedInsets.windowWidth.toFloat(),
-                            recordedInsets.windowHeight.toFloat()
+                            windowInsets.windowWidth.toFloat(),
+                            windowInsets.windowHeight.toFloat()
                         ),
                         sides
                     )
                 }
                 val fileName = "screenshot_node_${node.id}"
-                val screenShotRaw = root.captureToImage().asAndroidBitmap()//instrumentation.uiAutomation.takeScreenshot()
+                //val screenShotRaw = root.captureToImage().asAndroidBitmap()
+                val screenShotRaw = instrumentation.uiAutomation.takeScreenshot()
                 createOverlapScreenShot(fileName, screenShotRaw, overlappingBounds, node.boundsInWindow)
                 append(
                     buildGeneralErrorMessage(
@@ -232,7 +212,6 @@ fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
     if (message.isNotEmpty()) throw AssertionError(message)
     return this
 }
-
 
 fun getNameFromWindowInsetType(
     @InsetsType
@@ -266,4 +245,57 @@ fun getNameFromWindowInsetType(
     }
     if (insetTypes.isEmpty()) throw IllegalArgumentException("Type: $type is unknown!")
     return insetTypes.joinToString(",")
+}
+
+private val density = Density(1f)
+private val ld = LayoutDirection.Ltr
+
+fun androidx.compose.foundation.layout.WindowInsets.toBounds(
+    windowSize: Size,
+    sides: WindowInsetsSides
+): List<Rect> = buildList {
+    val leftSize = getLeft(density, ld).toFloat()
+    if (leftSize > 0 && sides.intersect(WindowInsetsSides.Left)) {
+        add(
+            Rect(
+                left = 0f,
+                top = 0f,
+                right = leftSize,
+                bottom = windowSize.height
+            )
+        )
+    }
+    val topSize = getTop(density).toFloat()
+    if (topSize > 0 && sides.intersect(WindowInsetsSides.Top)) {
+        add(
+            Rect(
+                left = 0f,
+                top = 0f,
+                right = windowSize.width,
+                bottom = topSize
+            )
+        )
+    }
+    val rightSize = getRight(density, ld).toFloat()
+    if (rightSize > 0 && sides.intersect(WindowInsetsSides.Right)) {
+        add(
+            Rect(
+                left = windowSize.width - rightSize,
+                top = 0f,
+                right = windowSize.width,
+                bottom = windowSize.height
+            )
+        )
+    }
+    val bottomSize = getBottom(density).toFloat()
+    if (bottomSize > 0 && sides.intersect(WindowInsetsSides.Bottom)) {
+        add(
+            Rect(
+                left = 0f,
+                top = windowSize.height - bottomSize,
+                right = windowSize.width,
+                bottom = windowSize.height
+            )
+        )
+    }
 }

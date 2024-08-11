@@ -13,10 +13,10 @@ plugins {
     //id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
 }
 
-val mavenGroupId = "de.drick.compose"
+val mavenGroupId = Versions.mavenGroupId
 val mavenArtifactId = "edge-to-edge-preview"
 
-val mavenVersion = "0.4.0"
+val mavenVersion = Versions.mavenLib
 
 android {
     namespace = "de.drick.compose.edgetoedgepreviewlib"
@@ -68,22 +68,23 @@ dependencies {
     //implementation(composeBom)
     // Currently there are problems when using bom.
     // MavenCentral do not validate the lib in this case
-    val composeVersion = "1.6.8"
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.foundation:foundation:$composeVersion")
-    implementation("androidx.compose.ui:ui-graphics:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
+    implementation("androidx.compose.ui:ui:${Versions.composeVersion}")
+    implementation("androidx.compose.foundation:foundation:${Versions.composeVersion}")
+    implementation("androidx.compose.ui:ui-graphics:${Versions.composeVersion}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}")
+    implementation("androidx.compose.material:material-icons-extended:${Versions.composeVersion}")
+
+    debugImplementation("androidx.compose.ui:ui-tooling:${Versions.composeVersion}")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}")
 
     //Testing
     testImplementation("junit:junit:${Versions.junit}")
+    testImplementation("androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}")
     androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
     //androidTestImplementation(composeBom)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}")
 }
 
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
@@ -168,9 +169,9 @@ publishing {
                     }
                 }
                 scm {
-                    url.set("https://github.com/timo-drick/compose_libraries")
-                    connection.set("scm:git:git://github.com/timo-drick/compose_libraries.git")
-                    developerConnection.set("scm:git:ssh://git@github.com/timo-drick/compose_libraries.git")
+                    url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
+                    connection.set("scm:git:git://github.com/timo-drick/compose_edge_to_edge_preview.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/timo-drick/compose_edge_to_edge_preview.git")
                 }
             }
 

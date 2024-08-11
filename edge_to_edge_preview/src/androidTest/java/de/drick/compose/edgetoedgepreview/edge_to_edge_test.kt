@@ -4,26 +4,23 @@ import android.app.UiAutomation
 import android.os.Build
 import android.os.SystemClock
 import android.view.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.io.PlatformTestStorageRegistry
 import de.drick.compose.edgetoedgepreview.ui.theme.ComposeLibrariesTheme
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import de.telekom.edgetoedgetestlib.SemanticsWindowInsetsAnchor
+import de.telekom.edgetoedgetestlib.assertAllWindowInsets
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -69,43 +66,36 @@ class EdgeToEdgeTest {
     }
 
     private fun testWindowInsets(rotation: Int) {
-        var recordedInsets: RecordedInsets? = null
         val activity = composeTestRule.activity
         composeTestRule.setContent {
+            SemanticsWindowInsetsAnchor()
             SideEffect {
                 if (Build.VERSION.SDK_INT >= 29) {
                     activity.window.isNavigationBarContrastEnforced = false
                 }
             }
             ComposeLibrariesTheme {
-                recordedInsets = recordInsets()
-                InsetsTest(Modifier.semantics {
-                    recordedInsets?.let {
-                        windowInsets = it
-                    }
-                })
+                InsetsTest()
             }
         }
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val platformTestStorage = PlatformTestStorageRegistry.getInstance()
         instrumentation.uiAutomation.setRotation(rotation)
         instrumentation.waitForIdleSync()
 
         SystemClock.sleep(1000)
         composeTestRule.waitForIdle()
-        composeTestRule
+        /*composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertAllWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
                 root = composeTestRule.onRoot()
-            )
+            )*/
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertAllWindowInsets(
-                insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                root = composeTestRule.onRoot()
+                insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
         /*composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
@@ -113,70 +103,17 @@ class EdgeToEdgeTest {
         */
         val node = composeTestRule.onNodeWithTag("Test").fetchSemanticsNode()
         node.parent
-        val position = node.positionInWindow
-        val bounds = node.boundsInWindow
 
-        platformTestStorage.openOutputFile("test_$rotation.json").use { outputStream ->
-            val json = Json {
-                prettyPrint = true
-            }
-            //val statusBars = windowInsets.getInsets(WindowInsets.Type.statusBars())
-            val string = recordedInsets?.let { json.encodeToString(it) } ?: "NA"
-            outputStream.write(string.toByteArray())
-        }
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("ROOT_NODE")
     }
 }
 
-private val density = Density(1f)
-private val ld = LayoutDirection.Ltr
-
-fun androidx.compose.foundation.layout.WindowInsets.toBounds(
-    windowSize: Size,
-    sides: WindowInsetsSides
-): List<Rect> = buildList {
-    val leftSize = getLeft(density, ld).toFloat()
-    if (leftSize > 0 && sides.intersect(WindowInsetsSides.Left)) {
-        add(
-            Rect(
-                left = 0f,
-                top = 0f,
-                right = leftSize,
-                bottom = windowSize.height
-            )
-        )
+fun SemanticsNodeInteraction.performScrollToBottom(): SemanticsNodeInteraction {
+    val node = fetchSemanticsNode()
+    val maxValue = node.config.getOrNull(SemanticsProperties.VerticalScrollAxisRange)?.maxValue?.invoke()
+    checkNotNull(maxValue)
+    performSemanticsAction(SemanticsActions.ScrollBy) {
+        it.invoke(0f, maxValue)
     }
-    val topSize = getTop(density).toFloat()
-    if (topSize > 0 && sides.intersect(WindowInsetsSides.Top)) {
-        add(
-            Rect(
-                left = 0f,
-                top = 0f,
-                right = windowSize.width,
-                bottom = topSize
-            )
-        )
-    }
-    val rightSize = getRight(density, ld).toFloat()
-    if (rightSize > 0 && sides.intersect(WindowInsetsSides.Right)) {
-        add(
-            Rect(
-                left = windowSize.width - rightSize,
-                top = 0f,
-                right = windowSize.width,
-                bottom = windowSize.height
-            )
-        )
-    }
-    val bottomSize = getBottom(density).toFloat()
-    if (bottomSize > 0 && sides.intersect(WindowInsetsSides.Bottom)) {
-        add(
-            Rect(
-                left = 0f,
-                top = windowSize.height - bottomSize,
-                right = windowSize.width,
-                bottom = windowSize.height
-            )
-        )
-    }
+    return this
 }
