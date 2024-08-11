@@ -1,6 +1,6 @@
 @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 
-package de.drick.compose.edgetoedgepreview
+package de.telekom.edgetoedgetestlib
 
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.ui.geometry.Rect
@@ -21,13 +21,21 @@ internal fun buildGeneralErrorMessage(
     errorMessage: String,
     nodeInteract: SemanticsNodeInteractionCollection,
     node: SemanticsNode
-) = buildGeneralErrorMessage(errorMessage, nodeInteract.selector, node)
+) = buildGeneralErrorMessage(
+    errorMessage,
+    nodeInteract.selector,
+    node
+)
 
 internal fun buildGeneralErrorMessage(
     errorMessage: String,
     nodeInteract: SemanticsNodeInteraction,
     node: SemanticsNode
-) = buildGeneralErrorMessage(errorMessage, nodeInteract.selector, node)
+) = buildGeneralErrorMessage(
+    errorMessage,
+    nodeInteract.selector,
+    node
+)
 
 internal fun buildGeneralErrorMessage(
     errorMessage: String,

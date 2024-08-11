@@ -1,4 +1,7 @@
 object Versions {
+    const val mavenLib = "0.4.0"
+    const val mavenGroupId = "de.drick.compose"
+
     const val benManesPlugin = "0.51.0" // Check for lib updates
 
     const val androidPlugin = "8.5.1"
@@ -20,6 +23,9 @@ object Versions {
     const val activityCompose = "1.9.1"
     const val composeBom = "2024.06.00"
     const val composeAdaptive = "1.0.0-beta04"
+    // Currently there are problems when using bom.
+    // MavenCentral do not validate the lib in this case
+    const val composeVersion = "1.6.8"
 
     const val junit = "4.13.2"
     const val extJunit = "1.2.1"
