@@ -34,8 +34,11 @@ private fun PreviewEdgeToEdgePortraitListDetail() {
 }
 
 @Composable
-fun SamplePortraitListDetail() {
+fun SamplePortraitListDetail(
+    modifier: Modifier = Modifier
+) {
     SplitLayoutHorizontal(
+        modifier = modifier,
         insets = WindowInsets.safeDrawing,
         first = {
             TestComponentWindowInsets(
@@ -61,8 +64,11 @@ fun SamplePortraitListDetail() {
 }
 
 @Composable
-fun SampleLandscapeListDetail() {
+fun SampleLandscapeListDetail(
+    modifier: Modifier = Modifier
+) {
     SplitLayoutVertical(
+        modifier = modifier,
         //insets = WindowInsets.safeDrawing,
         first = {
             TestComponentWindowInsets(

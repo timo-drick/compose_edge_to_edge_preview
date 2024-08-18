@@ -12,7 +12,6 @@ import android.view.PixelCopy
 import android.view.View
 import android.view.Window
 import androidx.annotation.DoNotInline
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -22,6 +21,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.window.DialogWindowProvider
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.graphics.HardwareRendererCompat
 import java.util.concurrent.CountDownLatch
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalTestApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
+@SdkSuppress(minSdkVersion = 26)
 fun SemanticsNodeInteraction.captureToImage(): ImageBitmap {
     val node = fetchSemanticsNode("Failed to capture a node to bitmap.")
     // Validate we are in popup
@@ -88,7 +88,7 @@ fun SemanticsNodeInteraction.captureToImage(): ImageBitmap {
     return windowToUse.captureRegionToImage(nodeBoundsRect)
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@SdkSuppress(minSdkVersion = 26)
 private fun SemanticsNode.findClosestParentNode(
     includeSelf: Boolean = false,
     selector: (SemanticsNode) -> Boolean
@@ -106,7 +106,7 @@ private fun SemanticsNode.findClosestParentNode(
 }
 
 @ExperimentalTestApi
-@RequiresApi(Build.VERSION_CODES.O)
+@SdkSuppress(minSdkVersion = 26)
 private fun processMultiWindowScreenshot(
     node: SemanticsNode
 ): ImageBitmap {
@@ -162,7 +162,7 @@ private fun Context.getActivityWindow(): Window {
     return getActivity().window
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@SdkSuppress(minSdkVersion = 26)
 private fun Window.captureRegionToImage(
     boundsInWindow: Rect,
 ): ImageBitmap {
@@ -187,7 +187,7 @@ private fun <R> withDrawingEnabled(block: () -> R): R {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@SdkSuppress(minSdkVersion = 26)
 private fun Window.generateBitmap(boundsInWindow: Rect): Bitmap {
     val destBitmap =
         Bitmap.createBitmap(
@@ -199,7 +199,7 @@ private fun Window.generateBitmap(boundsInWindow: Rect): Bitmap {
     return destBitmap
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@SdkSuppress(minSdkVersion = 26)
 private object PixelCopyHelper {
     @DoNotInline
     fun request(
@@ -213,7 +213,7 @@ private object PixelCopyHelper {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@SdkSuppress(minSdkVersion = 26)
 private fun Window.generateBitmapFromPixelCopy(boundsInWindow: Rect, destBitmap: Bitmap) {
     val latch = CountDownLatch(1)
     var copyResult = 0

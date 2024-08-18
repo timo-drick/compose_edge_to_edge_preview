@@ -84,6 +84,7 @@ dependencies {
     testImplementation("junit:junit:${Versions.junit}")
     testImplementation("org.robolectric:robolectric:${Versions.robolectric}")
     testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("androidx.test:runner:${Versions.testRunner}")
     androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")

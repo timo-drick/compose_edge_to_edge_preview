@@ -75,9 +75,11 @@ fun PreviewContentAppBar() {
 
 
 @Composable
-fun SamplePortraitContentAppBar() {
+fun SamplePortraitContentAppBar(
+    modifier: Modifier = Modifier
+) {
     Column(
-        Modifier
+        modifier
             .background(Color.LightGray)
             .fillMaxSize()
     ) {
@@ -104,9 +106,11 @@ fun SamplePortraitContentAppBar() {
 }
 
 @Composable
-fun SampleLandscapeContentAppBar() {
+fun SampleLandscapeContentAppBar(
+    modifier: Modifier = Modifier
+) {
     Row(
-        Modifier
+        modifier
             .background(Color.LightGray)
             .fillMaxSize()
     ) {

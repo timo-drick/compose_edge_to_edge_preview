@@ -18,6 +18,7 @@ import kotlin.math.min
 fun ListDetailLayout(
     tripList: @Composable () -> Unit,
     detail: @Composable (() -> Unit)?,
+    modifier: Modifier = Modifier,
     detailFullscreen: Boolean = false
 ) {
     val density = LocalDensity.current
@@ -35,7 +36,7 @@ fun ListDetailLayout(
     val consumedInsetsFirst = remember { MutablePaddingValues() }
     val consumedInsetsSecond = remember { MutablePaddingValues() }
     Layout(
-        modifier = Modifier.clipToBounds(),
+        modifier = modifier.clipToBounds(),
         content = {
             SmartInsetsConsumer(
                 Modifier
