@@ -38,7 +38,7 @@ import kotlin.math.min
 
 @Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
-fun PreviewSplitLayoutLandscape() {
+private fun PreviewSplitLayoutLandscape() {
     EdgeToEdgeTemplate(
         navMode = NavigationMode.ThreeButton,
         cameraCutoutMode = CameraCutoutMode.Middle,
@@ -50,9 +50,11 @@ fun PreviewSplitLayoutLandscape() {
 }
 
 @Composable
-fun SplitLayoutSample() {
+fun SplitLayoutSample(
+    modifier: Modifier = Modifier
+) {
     SplitLayoutVerticalSimple(
-        modifier = Modifier
+        modifier = modifier
             .background(Color.LightGray)
             .fillMaxSize(),
         first = {
@@ -70,30 +72,32 @@ fun SplitLayoutSample() {
 }
 
 @Composable
-fun SplitLayoutRowSample() {
+fun SplitLayoutRowSample(
+    modifier: Modifier = Modifier
+) {
     val insets = WindowInsets.safeDrawing
     SplitLayoutVerticalNaive(
-        modifier = Modifier
+        modifier = modifier
             .background(Color.LightGray)
             .fillMaxSize(),
         windowInsets = insets,
-        first = { modifier ->
+        first = { innserModifier ->
             TestComponentWindowInsets(
-                modifier = modifier
+                modifier = innserModifier
                     .width(120.dp)
                     .fillMaxHeight(),
                 title = "App Navigation Bar",
                 rotatedText = true
             )
         },
-        second = { modifier ->
+        second = { innderModifier ->
             val density = LocalDensity.current
             var insetsPadding by remember {
                 mutableStateOf(PaddingValues())
             }
             //val insetsPadding = WindowInsets.safeDrawing.asPaddingValues()
             TestComponentWindowInsets(
-                modifier = modifier
+                modifier = innderModifier
                     .onConsumedWindowInsetsChanged {
                         insetsPadding = insets
                             .exclude(it)
@@ -110,9 +114,9 @@ fun SplitLayoutRowSample() {
 
 @Composable
 fun SplitLayoutVerticalNaive(
+    first: @Composable RowScope.(Modifier) -> Unit,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = WindowInsets.safeDrawing,
-    first: @Composable RowScope.(Modifier) -> Unit,
     second: @Composable RowScope.(Modifier) -> Unit
 ) {
     Row(modifier) {
@@ -126,8 +130,8 @@ fun SplitLayoutVerticalNaive(
 
 @Composable
 fun SplitLayoutVerticalSimple(
-    modifier: Modifier = Modifier,
     first: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     second: @Composable () -> Unit
 ) {
     Layout(
@@ -180,9 +184,9 @@ fun SplitLayoutVerticalSimple(
 
 @Composable
 fun SplitLayoutVertical(
+    first: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     insets: WindowInsets? = null,
-    first: @Composable () -> Unit,
     second: @Composable () -> Unit
 ) {
     val consumedInsetsFirst = remember { MutablePaddingValues() }
@@ -242,9 +246,9 @@ fun SplitLayoutVertical(
 
 @Composable
 fun SplitLayoutHorizontal(
+    first: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     insets: WindowInsets? = null,
-    first: @Composable () -> Unit,
     second: @Composable () -> Unit
 ) {
     //val density = LocalDensity.current

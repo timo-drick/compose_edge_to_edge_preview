@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.unit.Density
@@ -27,7 +28,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.platform.io.PlatformTestStorageRegistry
 
 val WindowInsetsKey = SemanticsPropertyKey<TestWindowInsets>("WindowInsets")
 var SemanticsPropertyReceiver.windowInsets by WindowInsetsKey
@@ -93,7 +93,7 @@ private fun createOverlapScreenShot(
     insetBounds: List<Rect>,
     bounds: Rect
 ) {
-    val screenShot = screenShotRaw.copy(screenShotRaw.config, true)
+    val screenShot = screenShotRaw.copy(checkNotNull(screenShotRaw.config), true)
     Canvas(screenShot.asImageBitmap()).apply {
         val paint = Paint().apply {
             color = Color.Red
@@ -152,6 +152,7 @@ fun SemanticsNodeInteraction.assertWindowInsets(
     return this
 }
 
+@OptIn(ExperimentalTestApi::class)
 fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
     @InsetsType insetType: Int,
 ): SemanticsNodeInteractionCollection {

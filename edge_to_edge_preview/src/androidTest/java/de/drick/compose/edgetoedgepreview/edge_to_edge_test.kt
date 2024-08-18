@@ -17,7 +17,6 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.printToLog
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.platform.io.PlatformTestStorageRegistry
 import de.drick.compose.edgetoedgepreview.ui.theme.ComposeLibrariesTheme
 import de.telekom.edgetoedgetestlib.SemanticsWindowInsetsAnchor
 import de.telekom.edgetoedgetestlib.assertAllWindowInsets

@@ -7,7 +7,7 @@ plugins {
 }
 
 val mavenGroupId = Versions.mavenGroupId
-val mavenArtifactId = "edge-to-edge-preview"
+val mavenArtifactId = "edge-to-edge-test"
 
 val mavenVersion = Versions.mavenLib
 
@@ -42,6 +42,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
+
 
     publishing {
         singleVariant("release") {

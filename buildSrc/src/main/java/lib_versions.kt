@@ -4,15 +4,15 @@ object Versions {
 
     const val benManesPlugin = "0.51.0" // Check for lib updates
 
-    const val androidPlugin = "8.5.1"
+    const val androidPlugin = "8.5.2"
 
     const val vanniktechPlugin = "0.28.0"
     const val spotless = "6.16.0"
 
-    const val kotlin = "2.0.0"
+    const val kotlin = "2.0.10"
 
-    const val buildTools = "34.0.0"
-    const val compileSdk = 34
+    const val buildTools = "35.0.0"
+    const val compileSdk = 35
 
     const val kotlinSerialization = "1.7.1"
 
@@ -31,6 +31,7 @@ object Versions {
     const val extJunit = "1.2.1"
     const val espresso = "3.6.1"
     const val uiAutomator = "2.4.0-alpha01"
-    const val composeScreenshot = "0.0.1-alpha03"
+    const val testRunner = "1.6.2"
+    const val composeScreenshot = "0.0.1-alpha04"
     const val robolectric = "4.13"
 }

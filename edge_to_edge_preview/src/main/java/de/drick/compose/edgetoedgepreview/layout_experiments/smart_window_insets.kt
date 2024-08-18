@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.layout.WindowMetricsCalculator
 import kotlin.math.max
 
-
+/*
 data class PaddingPx(
     val left: Int,
     val top: Int,
@@ -49,7 +49,7 @@ fun SmartInsetsProvider(
     // Mutable PaddingValues needed because of animations.
     val insetPaddingValues = remember { MutableFixedPaddingValues() }
     val windowSize = getWindowSize()
-
+    
     Layout(
         modifier = modifier,
         content = { content(insetPaddingValues) }
@@ -76,6 +76,7 @@ fun SmartInsetsProvider(
         }
     }
 }
+*/
 
 /**
  * This component will consume the window insets that are not overlapping with this component
@@ -83,7 +84,7 @@ fun SmartInsetsProvider(
 @Composable
 fun SmartInsetsConsumer(
     modifier: Modifier = Modifier,
-    content: @Composable @UiComposable () -> Unit
+    content: @Composable () -> Unit
 ) {
     val consumedWindowInsets = remember { MutableFixedPaddingValues() }
     val ctx = LocalContext.current
@@ -139,7 +140,7 @@ fun windowSize(ctx: Context): IntSize {
 /**
  * This modifier works but not for animations. Not sure why
  */
-@SuppressLint("ComposeComposableModifier")
+/*
 @Composable
 fun Modifier.consumeNonOverlappingInsets(): Modifier {
     val density = LocalDensity.current
@@ -169,12 +170,12 @@ fun Modifier.consumeNonOverlappingInsets(): Modifier {
             }
         }
         .consumeWindowInsets(consumedWindowInsets)
-}
-
+}*/
 
 /**
  * This modifier works but not for animations. Not sure why
  */
+/*
 fun Modifier.windowInsetsPaddingNonOverlapping() = composed {
     //val density = LocalDensity.current
     //var consumedWindowInsets by remember { mutableStateOf(PaddingValues()) }
@@ -200,6 +201,7 @@ fun Modifier.windowInsetsPaddingNonOverlapping() = composed {
         }
         .consumeWindowInsets(insets)
 }
+*/
 
 class DeferredFixedPaddingValues: PaddingValues {
     var left = 0.dp
