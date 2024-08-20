@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -115,7 +116,8 @@ fun EdgeToEdgeTemplate(
                 modifier = Modifier
                     .zIndex(1001f)
                     .align(cameraCutoutAlignment)
-                    .then(borderModifier),
+                    .then(borderModifier)
+                    .clearAndSetSemantics {  },
                 cutoutMode = cameraCutoutMode,
                 isVertical = isLandscape,
                 cutoutSize = cameraCutoutSizeDp
@@ -141,7 +143,7 @@ fun EdgeToEdgeTemplate(
                     .drawWithContent {
                         // draw status bar only when it is visible
                         if (isStatusBarVisible) drawContent()
-                    },
+                    }.clearAndSetSemantics {  },
                 isDarkMode = isDarkMode
             )
 
@@ -166,7 +168,8 @@ fun EdgeToEdgeTemplate(
                     .drawWithContent {
                         // draw navigation bar only when it is visible
                         if (isNavigationBarVisible) drawContent()
-                    },
+                    }
+                    .clearAndSetSemantics {  },
                 isVertical = isLandscape,
                 isDarkMode = isDarkMode,
                 navMode = navMode,
