@@ -11,8 +11,7 @@ object Versions {
 
     const val kotlin = "2.0.10"
 
-    const val buildTools = "35.0.0"
-    const val compileSdk = 35
+    const val compileSdk = 34
 
     const val kotlinSerialization = "1.7.1"
 
