@@ -21,50 +21,28 @@ import de.drick.compose.edgetoedgepreview.ui.theme.ComposeLibrariesTheme
 import de.telekom.edgetoedgetestlib.SemanticsWindowInsetsAnchor
 import de.telekom.edgetoedgetestlib.assertAllWindowInsets
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
-class EdgeToEdgeTest {
+@RunWith(Parameterized::class)
+class EdgeToEdgeTest(rotation: TestRotation): EdgeToEdgeTestNoActivity(rotation) {
 
-    @get:Rule val composeTestRule = createAndroidComposeRule<TestActivity>()
+    override val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     //@get:Rule val composeTestRule = createEmptyComposeRule()
 
     //private lateinit var scenario: ActivityScenario<MainActivity>
 
-    private lateinit var windowInsets: WindowInsets
-
     @Before
     fun setup() {
-        //scenario = ActivityScenario.launch(MainActivity::class.java)
-        /*scenario.onActivity {
-            val view = it.findViewById<View>(android.R.id.content)
-            windowInsets = WindowInsets.Builder().build()
-            view.setOnApplyWindowInsetsListener { v, insets ->
-                windowInsets = insets
-                insets
-            }
-        }*/
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation.uiAutomation.setRotation(rotation.rotation)
+        instrumentation.waitForIdleSync()
     }
 
     @Test
-    fun edgeToEdge0() {
-        testWindowInsets(UiAutomation.ROTATION_FREEZE_0)
-    }
-    @Test
-    fun edgeToEdge90() {
-        testWindowInsets(UiAutomation.ROTATION_FREEZE_90)
-    }
-    @Test
-    fun edgeToEdge180() {
-        testWindowInsets(UiAutomation.ROTATION_FREEZE_180)
-    }
-    @Test
-    fun edgeToEdge270() {
-        testWindowInsets(UiAutomation.ROTATION_FREEZE_270)
-    }
-
-    private fun testWindowInsets(rotation: Int) {
+    fun testWindowInsets() {
         val activity = composeTestRule.activity
         composeTestRule.setContent {
             SemanticsWindowInsetsAnchor()
@@ -77,24 +55,20 @@ class EdgeToEdgeTest {
                 InsetsTest()
             }
         }
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        instrumentation.uiAutomation.setRotation(rotation)
-        instrumentation.waitForIdleSync()
-
-        SystemClock.sleep(1000)
         composeTestRule.waitForIdle()
-        /*composeTestRule
+        composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertAllWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                root = composeTestRule.onRoot()
-            )*/
+                baseName = "screenshot_$rotation"
+            )
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertAllWindowInsets(
-                insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+                insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                baseName = "screenshot_${rotation}_scrolled"
             )
         /*composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))

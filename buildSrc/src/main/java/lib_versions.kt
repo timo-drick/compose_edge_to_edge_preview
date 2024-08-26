@@ -21,7 +21,7 @@ object Versions {
     const val composeLintChecks = "1.3.1"
     const val activityCompose = "1.9.1"
     const val composeBom = "2024.06.00"
-    const val composeAdaptive = "1.0.0-beta04"
+    const val composeAdaptive = "1.0.0-rc01"
     // Currently there are problems when using bom.
     // MavenCentral do not validate the lib in this case
     const val composeVersion = "1.6.8"
