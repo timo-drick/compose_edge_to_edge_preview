@@ -28,6 +28,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.platform.app.InstrumentationRegistry
+import java.io.File
 
 val WindowInsetsKey = SemanticsPropertyKey<TestWindowInsets>("WindowInsets")
 var SemanticsPropertyReceiver.windowInsets by WindowInsetsKey
@@ -91,7 +92,8 @@ private fun createOverlapScreenShot(
     fileName: String,
     screenShotRaw: Bitmap,
     insetBounds: List<Rect>,
-    bounds: Rect
+    bounds: Rect,
+    isRobolectricTest: Boolean
 ) {
     val screenShot = screenShotRaw.copy(checkNotNull(screenShotRaw.config), true)
     Canvas(screenShot.asImageBitmap()).apply {
@@ -113,11 +115,18 @@ private fun createOverlapScreenShot(
             drawRect(intersection, paintFill)
         }
     }
-    screenShot.writeToTestStorage(fileName)
+    if (isRobolectricTest) {
+        File("$fileName.png").outputStream().use {
+            screenShot.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+    } else {
+        screenShot.writeToTestStorage(fileName)
+    }
 }
 
 fun SemanticsNodeInteraction.assertWindowInsets(
     @InsetsType insetType: Int,
+    isRobolectricTest: Boolean = false,
     messagePrefixOnError: (() -> String)? = null
 ): SemanticsNodeInteraction {
     val insetName = getNameFromWindowInsetType(insetType)
@@ -140,7 +149,13 @@ fun SemanticsNodeInteraction.assertWindowInsets(
         }
         val fileName = "screenshot_overlap_${node.id}"
         val screenShotRaw = instrumentation.uiAutomation.takeScreenshot()
-        createOverlapScreenShot(fileName, screenShotRaw, overlappingBounds, node.boundsInWindow)
+        createOverlapScreenShot(
+            fileName = fileName,
+            screenShotRaw = screenShotRaw,
+            insetBounds = overlappingBounds,
+            bounds = node.boundsInWindow,
+            isRobolectricTest = isRobolectricTest
+        )
         val message = buildString {
             append(buildGeneralErrorMessage(errorMessageOnFail, this@assertWindowInsets, node))
             appendLine()
@@ -154,13 +169,42 @@ fun SemanticsNodeInteraction.assertWindowInsets(
 
 @OptIn(ExperimentalTestApi::class)
 fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
+    baseName: String = "screenshot",
     @InsetsType insetType: Int,
+    isRobolectricTest: Boolean = false,
 ): SemanticsNodeInteractionCollection {
     val insetName = getNameFromWindowInsetType(insetType)
     val errorOnFail = "Failed to assertAllWindowInsets($insetName)"
     val nodes = fetchSemanticsNodes(errorMessageOnFail = errorOnFail)
     val windowInsets = nodes.first().findWindowInsets()
-    checkNotNull(windowInsets) { "SemanticsWindowInsetsAnchor not found in semantics hierarchy" }
+    checkNotNull(windowInsets) { """
+        |SemanticsWindowInsetsAnchor not found in semantics hierarchy!
+        |Please make sure you added SemanticsWindowInsetsAnchor in your composable.
+        |Example:
+        |> composeTestRule.setContent {
+        |>     enableEdgeToEdge()
+        |>  -> SemanticsWindowInsetsAnchor() <--
+        |>     AppTheme {
+        |>         ComposableToTest()
+        |>     }
+        |> }
+        """.trimMargin()
+    }
+    check(windowInsets.isNotEmpty()) { """
+        |Detected window insets are empty!
+        |Maybe you forgot to enable edge to edge?
+        |//TODO different example when in robolectric mode!
+        |Example:
+        |> composeTestRule.setContent {
+        |> --> enableEdgeToEdge() <--
+        |>     SemanticsWindowInsetsAnchor()
+        |>     AppTheme {
+        |>         ComposableToTest()
+        |>     }
+        |> }
+    """.trimMargin()
+
+    }
     val instrumentation = InstrumentationRegistry.getInstrumentation()
     val message = buildString {
         nodes.forEach { node ->
@@ -168,13 +212,14 @@ fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
             val traversalGroupNode = findTraversalGroupNode(node)
             var sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
             var scrollPosition = 0f
+            //TODO add horizontal traversal group
             traversalGroupNode?.let {
                 it.config.getOrNull(SemanticsProperties.VerticalScrollAxisRange)?.let { verticalRange ->
                     //appendLine("Traversal node: ${traversalGroupNode.id} $verticalRange")
                     sides = WindowInsetsSides.Horizontal
                     val vPos = verticalRange.value()
                     scrollPosition = vPos
-                    if ( vPos <= 0f) sides += WindowInsetsSides.Top
+                    if (vPos <= 0f) sides += WindowInsetsSides.Top
                     if (vPos >= verticalRange.maxValue())
                         sides += WindowInsetsSides.Bottom
                 }
@@ -190,10 +235,16 @@ fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
                         sides
                     )
                 }
-                val fileName = "screenshot_node_${node.id}"
+                val fileName = "${baseName}_node_${node.id}"
                 //val screenShotRaw = root.captureToImage().asAndroidBitmap()
                 val screenShotRaw = instrumentation.uiAutomation.takeScreenshot()
-                createOverlapScreenShot(fileName, screenShotRaw, overlappingBounds, node.boundsInWindow)
+                createOverlapScreenShot(
+                    fileName = fileName,
+                    screenShotRaw = screenShotRaw,
+                    insetBounds = overlappingBounds,
+                    bounds = node.boundsInWindow,
+                    isRobolectricTest = isRobolectricTest
+                )
                 append(
                     buildGeneralErrorMessage(
                         "",
@@ -206,6 +257,11 @@ fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
                     overlapInsets.joinToString { getNameFromWindowInsetType(it.type) }
                 appendLine("[$overlappingInsetTypes] overlap with node!")
                 appendLine("scroll position: $scrollPosition")
+                val device = "${android.os.Build.MODEL} - ${android.os.Build.VERSION.RELEASE}"
+                appendLine("Device: $device")
+                val screenshotBaseFolder = "../../../outputs/connected_android_test_additional_output/debugAndroidTest/connected"
+                val screenshotFile = "$screenshotBaseFolder/$device/$fileName.png"
+                appendLine("""Screenshot: [$device] $fileName.png""")
                 appendLine()
             }
         }
@@ -250,6 +306,15 @@ fun getNameFromWindowInsetType(
 
 private val density = Density(1f)
 private val ld = LayoutDirection.Ltr
+
+fun TestWindowInsets.isNotEmpty(): Boolean =
+    windowWidth > 0 && windowHeight > 0 &&
+            insetList.any {
+                it.insetIgnoringVisibility.getTop(density) > 0 ||
+                        it.insetIgnoringVisibility.getRight(density, ld) > 0 ||
+                        it.insetIgnoringVisibility.getBottom(density) > 0 ||
+                        it.insetIgnoringVisibility.getLeft(density, ld) > 0
+            }
 
 fun androidx.compose.foundation.layout.WindowInsets.toBounds(
     windowSize: Size,

@@ -14,7 +14,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -51,15 +50,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
@@ -118,7 +110,6 @@ fun InsetsTest(modifier: Modifier = Modifier) {
             Box(
                 Modifier
                     //.padding(insetPadding)
-                    .fadingEdge(paddingValues)
                     .fillMaxSize()
             ) {
                 Column(
@@ -133,16 +124,6 @@ fun InsetsTest(modifier: Modifier = Modifier) {
                 ) {
                     Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
                     Text("Title", modifier = Modifier.testTag("Test"))
-                    /*Row {
-                        Spacer(Modifier.weight(1f))
-                        var text by remember { mutableStateOf("") }
-                        TextField(
-                            modifier = Modifier
-                                .focusRequester(focusRequester),
-                            value = text,
-                            onValueChange = { text = it }
-                        )
-                    }*/
                     val density = LocalDensity.current
                     val layoutDirection = LocalLayoutDirection.current
                     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -170,11 +151,11 @@ fun InsetsTest(modifier: Modifier = Modifier) {
                     InsetValues(WindowInsets.tappableElement)
                     InsetValues(WindowInsets.systemGestures)
                     InsetValues(WindowInsets.waterfall)
-                    /*Spacer(
+                    Spacer(
                         modifier = Modifier
                             .testTag("last item")
                             .windowInsetsBottomHeight(WindowInsets.safeDrawing)
-                    )*/
+                    )
                 }
                 var animateStart by remember { mutableStateOf(false) }
                 val detailVisible by animateFloatAsState(
@@ -279,44 +260,3 @@ private fun GreetingPreviewInverted() {
         }
     }
 }
-
-fun Modifier.fadingEdge(paddingValues: PaddingValues) = this
-    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-    .drawWithContent {
-        drawContent()
-        val top = paddingValues
-            .calculateTopPadding()
-            .toPx()
-        if (top > 0) {
-            val fade = Brush.verticalGradient(
-                //0.0f to Color.Black.copy(alpha = 0.3f),
-                0.5f to Color.Black.copy(alpha = 0.3f),
-                1.0f to Color.Black,
-                endY = top
-            )
-            drawRect(
-                brush = fade,
-                size = Size(size.width, top),
-                blendMode = BlendMode.DstIn
-            )
-        }
-        val bottom = paddingValues
-            .calculateBottomPadding()
-            .toPx()
-        if (bottom > 0) {
-            val offset = size.height - bottom
-            val fade = Brush.verticalGradient(
-                0.0f to Color.Black,
-                0.5f to Color.Black.copy(alpha = 0.3f),
-                //1.0f to Color.Transparent,
-                startY = offset,
-                endY = size.height
-            )
-            drawRect(
-                brush = fade,
-                topLeft = Offset(0f, offset),
-                size = Size(size.width, bottom),
-                blendMode = BlendMode.DstIn
-            )
-        }
-    }

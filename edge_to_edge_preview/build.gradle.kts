@@ -43,6 +43,8 @@ android {
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     testOptions {
+        animationsDisabled = true
+
         unitTests {
             isIncludeAndroidResources = true
         }
@@ -86,6 +88,7 @@ dependencies {
     testImplementation("androidx.compose.ui:ui-test-junit4")
     testImplementation("androidx.test:runner:${Versions.testRunner}")
     androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }
