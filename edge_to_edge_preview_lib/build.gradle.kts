@@ -73,7 +73,6 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:${Versions.composeVersion}")
     implementation("androidx.compose.ui:ui-graphics:${Versions.composeVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}")
-    implementation("androidx.compose.material:material-icons-extended:${Versions.composeVersion}")
 
     debugImplementation("androidx.compose.ui:ui-tooling:${Versions.composeVersion}")
     debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}")
@@ -197,9 +196,9 @@ publishing {
     }
 }
 
-signing {
+/*signing {
     val signingKey = System.getenv("SIGNING_KEY")
     val signingPassword = System.getenv("SIGNING_PASSWORD")
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
-}
+}*/

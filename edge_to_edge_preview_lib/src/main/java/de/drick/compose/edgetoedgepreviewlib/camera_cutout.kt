@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lens
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +18,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.local.compose.icons.Icons_Filled_Lens
 
 enum class CameraCutoutMode {
     None, Middle, Start, End
@@ -71,7 +70,7 @@ fun CameraCutout(
         ) {
             Image(
                 modifier = Modifier.fillMaxWidth(),
-                imageVector = Icons.Default.Lens,
+                imageVector = Icons_Filled_Lens,
                 contentDescription = "Camera lens",
                 contentScale = ContentScale.FillWidth
             )
@@ -93,7 +92,7 @@ fun CameraCutout(
         ) {
             Image(
                 modifier = Modifier.fillMaxHeight(),
-                imageVector = Icons.Default.Lens,
+                imageVector = Icons_Filled_Lens,
                 contentDescription = "Camera lens",
                 contentScale = ContentScale.FillHeight
             )
