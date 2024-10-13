@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.compose")
     kotlin("plugin.serialization")
     id("com.android.compose.screenshot")
-    //id("app.cash.paparazzi")
+    id("app.cash.paparazzi")
 }
 
 android {
