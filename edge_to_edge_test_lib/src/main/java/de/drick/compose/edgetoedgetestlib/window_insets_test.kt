@@ -21,7 +21,6 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.unit.Density
@@ -93,6 +92,7 @@ fun checkOverlap(
         }
 }
 
+@SuppressLint("UnsafeOptInUsageError")
 private fun createOverlapScreenShot(
     fileName: String,
     screenShotRaw: Bitmap,
@@ -172,7 +172,6 @@ fun SemanticsNodeInteraction.assertWindowInsets(
     return this
 }
 
-@OptIn(ExperimentalTestApi::class)
 fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
     baseName: String = "screenshot",
     @InsetsType insetType: Int,
