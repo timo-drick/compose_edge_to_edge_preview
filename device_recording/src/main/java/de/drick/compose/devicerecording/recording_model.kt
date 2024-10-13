@@ -102,12 +102,13 @@ fun getNameFromWindowInsetType(
 
 @Serializable
 data class RecordedInsets(
+    val screenshotFileName: String,
     val manufacturer: String,
     val model: String,
     val apiLevel: Int,
-    val windowWidth: Int,
-    val windowHeight: Int,
-    val density: Float,
+    val windowWidth: Int, // screen width in pixel
+    val windowHeight: Int,// screen height in pixel
+    val density: Float,   // screen density
     val orientation: Int,
     val navigationMode: NavigationMode,
     val insetList: List<InsetEntry>
@@ -121,7 +122,9 @@ fun Context.navigationMode(): NavigationMode? {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun recordInsets(): RecordedInsets {
+fun recordInsets(
+    screenshotFileName: String
+): RecordedInsets {
     //TODO optimize to not update on every recomposition
 
     val insetList = listOf(
@@ -182,6 +185,7 @@ fun recordInsets(): RecordedInsets {
     val density = LocalDensity.current.density
     val navigationMode = LocalContext.current.navigationMode()
     return RecordedInsets(
+        screenshotFileName = screenshotFileName,
         manufacturer = manufacturer,
         model = model,
         apiLevel = apiLevel,

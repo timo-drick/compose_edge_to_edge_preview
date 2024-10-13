@@ -1,6 +1,6 @@
 @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 
-package de.telekom.edgetoedgetestlib
+package de.drick.compose.edgetoedgetestlib
 
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.ui.geometry.Rect

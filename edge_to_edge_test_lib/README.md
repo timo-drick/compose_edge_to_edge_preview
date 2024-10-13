@@ -7,8 +7,8 @@ Here I describe how to do following test:
   - Testing on a real device or an emulator.
 - Robolectric tests
   - Testing on your host system so no emulator is needed.
-- Screenshot tests (Android beta)
-  - On host system using preview definitions.
+- Screenshot tests
+  - On host system using preview definitions. (Android beta)
   - On host system using Roborazzi
 
 ## Integration tests (androidTest)
@@ -33,8 +33,8 @@ class EdgeToEdgeTestEmpty {
     @Before
     fun testWindowInsets() {
         composeTestRule.setContent {
-            enableEdgeToEdge()
-            SemanticsWindowInsetsAnchor()
+            enableEdgeToEdge()             // calls enableEdgeToEdge on the activity
+            SemanticsWindowInsetsAnchor()  // Needed for the test function to detect the WindowInsets
             YourAppTheme {
                 ComposeScreenToTest()
             }
@@ -44,6 +44,8 @@ class EdgeToEdgeTestEmpty {
 ```
 
 ## Robolectric
+
+There many reasons why it makes sense to write tests using Robolectric. Especially for edge-to-edge design. If we want to check every possible configuration of window insets we would need a lot of different devices with different configurations. Or Different emulators. But for our test system this would require a lot of resources. So with robolectric we can simulate window inset configurations from as many different devices like we want.
 
 
 
@@ -55,3 +57,4 @@ This means that we have to change the window insets during the test. So we can c
 
 ## Screenshot tests
 
+https://github.com/takahirom/roborazzi

@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.drick.compose.edgetoedgepreviewlib.CameraCutoutMode
 import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
+import de.drick.compose.edgetoedgepreviewlib.InsetMode
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 
 @Preview(name = "portrait", device = "spec:width=300dp,height=600dp,dpi=440")
@@ -53,10 +54,30 @@ private fun PreviewEdgeToEdgePortrait2() {
 
 @SampleBlogPreviews
 @Composable
-private fun PreviewEdgeToEdgePortrait3() {
+private fun PreviewEdgeToEdgePortrait4() {
     EdgeToEdgeTemplate(
         navMode = NavigationMode.Gesture,
         cameraCutoutMode = CameraCutoutMode.Middle,
+        showInsetsBorder = true,
+        isInvertedOrientation = true
+    ) {
+        PreviewContentAppBar()
+    }
+}
+
+@Preview(
+    name = "Desktop",
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_DESK,
+    device = "spec:width=700dp,height=500dp,dpi=320"
+)
+@Composable
+private fun PreviewEdgeToEdgePortraitDesktop() {
+    EdgeToEdgeTemplate(
+        navMode = NavigationMode.Gesture,
+        cameraCutoutMode = CameraCutoutMode.None,
+        statusBarMode = InsetMode.Off,
+        navigationBarMode = InsetMode.Off,
+        captionBarMode = InsetMode.Visible,
         showInsetsBorder = true,
         isInvertedOrientation = true
     ) {
