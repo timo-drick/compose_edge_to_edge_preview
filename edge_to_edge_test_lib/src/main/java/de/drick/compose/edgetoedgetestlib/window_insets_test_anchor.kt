@@ -1,4 +1,4 @@
-package de.telekom.edgetoedgetestlib
+package de.drick.compose.edgetoedgetestlib
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets

@@ -1,9 +1,12 @@
+import org.gradle.internal.classpath.Instrumented.systemProperty
+
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("plugin.compose")
     kotlin("plugin.serialization")
     id("com.android.compose.screenshot")
+    //id("app.cash.paparazzi")
 }
 
 android {
@@ -40,6 +43,10 @@ android {
         compose = true
     }
 
+    lint {
+        disable += "SlotReused" // Unfortunately this rule does produce false negatives. Not usable
+    }
+
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     testOptions {
@@ -48,7 +55,20 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
+
+        // https://developer.android.com/studio/test/gradle-managed-devices
+        managedDevices {
+            localDevices {
+                create("pixel5api34") {
+                    device = "Pixel 5"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+            }
+        }
     }
+
+    systemProperty("robolectric.screenshot.hwrdr.native","true")
 
     packaging {
         resources {

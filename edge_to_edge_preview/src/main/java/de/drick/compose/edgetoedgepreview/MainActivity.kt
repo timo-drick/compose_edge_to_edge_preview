@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -39,22 +38,19 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -73,16 +69,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        if (Build.VERSION.SDK_INT >= 29) {
+            window.isNavigationBarContrastEnforced = false
+        }
         setContent {
-            SideEffect {
-                if (Build.VERSION.SDK_INT >= 29) {
-                    window.isNavigationBarContrastEnforced = false
-                }
-            }
-
-            ComposeLibrariesTheme {
+            ComposeLibrariesTheme(
+                dynamicColor = true
+            ) {
                 // A surface container using the 'background' color from the theme
-                InsetsTest()
+                InsetsTest(Modifier.fillMaxSize())
                 //SplitLayoutSample()
                 //SplitLayoutRowSample()
             }
@@ -93,18 +88,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun InsetsTest(modifier: Modifier = Modifier) {
-    val focusRequester = remember { FocusRequester() }
+    /*val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
         //focusRequester.requestFocus()
-    }
-    Box(
-        modifier
-            .fillMaxSize()
-            .background(Color.Red)
-            .onSizeChanged {
-                Log.d("SmartInsets", "Size: $it")
-            }
-    ) {
+    }*/
+    Surface(modifier) {
         //SmartInsetsProvider(insets = WindowInsets.safeDrawing) { insetPadding ->
             val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
             Box(
@@ -114,10 +102,10 @@ fun InsetsTest(modifier: Modifier = Modifier) {
             ) {
                 Column(
                     modifier = Modifier
-                        .background(Color.Blue)
+                        //.background(Color.Blue)
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                         .fillMaxSize()
-                        .background(Color.Green)
+                        //.background(Color.Green)
                         .verticalScroll(rememberScrollState())
                         .padding(0.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -146,8 +134,8 @@ fun InsetsTest(modifier: Modifier = Modifier) {
                     InsetValues(WindowInsets.statusBars)
                     InsetValues(WindowInsets.navigationBars)
                     InsetValues(WindowInsets.captionBar)
-                    InsetValues(WindowInsets.ime)
                     InsetValues(WindowInsets.displayCutout)
+                    InsetValues(WindowInsets.ime)
                     InsetValues(WindowInsets.tappableElement)
                     InsetValues(WindowInsets.systemGestures)
                     InsetValues(WindowInsets.waterfall)

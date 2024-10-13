@@ -17,24 +17,30 @@ import de.drick.compose.edgetoedgepreview.ui.theme.ComposeLibrariesTheme
 import de.drick.compose.edgetoedgepreviewlib.CameraCutoutMode
 import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
-import de.telekom.edgetoedgetestlib.SemanticsWindowInsetsAnchor
-import de.telekom.edgetoedgetestlib.assertAllWindowInsets
+import de.drick.compose.edgetoedgetestlib.SemanticsWindowInsetsAnchor
+import de.drick.compose.edgetoedgetestlib.assertAllWindowInsets
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowLog
 import java.io.File
 
-enum class TestOrientation { PORTRAIT, LANDSCAPE }
-enum class TestInvertedOrientation { NORMAL, INVERTED }
 
+enum class TestInvertedOrientation { NORMAL, INVERTED }
+private val testQualifiersList = listOf(
+    "w360dp-h640dp-xxhdpi",
+    "w640dp-h360dp-xxhdpi"
+)
+
+@Config(sdk = [34])
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class EdgeToEdgeTestRobolectric(
-    private val testOrientation: TestOrientation,
+    private val testQualifiers: String,
     private val testInvertedOrientation: TestInvertedOrientation,
     private val navigationMode: NavigationMode
 ) {
@@ -43,10 +49,10 @@ class EdgeToEdgeTestRobolectric(
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters(name = "{0},{1},{2}")
         fun data() = buildList {
-            TestOrientation.entries.forEach { orientation ->
+            testQualifiersList.forEach { qualifiers ->
                 TestInvertedOrientation.entries.forEach { inverted ->
-                    add(arrayOf(orientation, inverted, NavigationMode.ThreeButton))
-                    add(arrayOf(orientation, inverted, NavigationMode.Gesture))
+                    add(arrayOf(qualifiers, inverted, NavigationMode.ThreeButton))
+                    add(arrayOf(qualifiers, inverted, NavigationMode.Gesture))
                 }
             }
         }
@@ -58,16 +64,12 @@ class EdgeToEdgeTestRobolectric(
     @Throws(Exception::class)
     fun setUp() {
         ShadowLog.stream = System.out // Redirect Logcat to console
+        RuntimeEnvironment.setQualifiers(testQualifiers)
     }
 
     @Test
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     fun testWindowInsets() {
-        when (testOrientation) {
-            TestOrientation.PORTRAIT -> RuntimeEnvironment.setQualifiers("w360dp-h640dp-xxhdpi")
-            TestOrientation.LANDSCAPE -> RuntimeEnvironment.setQualifiers("w640dp-h360dp-xxhdpi")
-        }
-
         composeTestRule.setContent {
             EdgeToEdgeTemplate(
                 modifier = Modifier
@@ -83,7 +85,7 @@ class EdgeToEdgeTestRobolectric(
                 }
             }
         }
-        val base = "screenshot_${testOrientation}_$testInvertedOrientation"
+        val base = "screenshot_${testQualifiers}_$testInvertedOrientation"
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertAllWindowInsets(
@@ -104,11 +106,15 @@ class EdgeToEdgeTestRobolectric(
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertAll(SemanticsMatcher.windowInsets())
         */
-        val bitmap = composeTestRule.onNodeWithTag("edge_to_edge")
+        System.setProperty("robolectric.screenshot.hwrdr.native", "true")
+        val bitmap = composeTestRule
+            .onNodeWithTag("edge_to_edge")
             .captureToImage()
             .asAndroidBitmap()
+        //val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
         //.writeToTestStorage("testImage1")
-        File("screenshot.png").outputStream().use {
+
+        File("${base}_screenshot.png").outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
         }
         //composeTestRule.onRoot(useUnmergedTree = true).printToLog("ROOT_NODE")

@@ -80,7 +80,7 @@ fun BaseLayout(
         useHiddenApiHack = false
     ) {
         Box(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(Color.White)) {
             content()
@@ -361,35 +361,6 @@ fun AppNavigationBar(
             title = "App Navigation Bar"
         )
     }
-}
-
-
-@Composable
-fun insetsPaddingValues(insets: WindowInsets): PaddingValues {
-    val density = LocalDensity.current
-    var paddingValues by remember {
-        mutableStateOf(insets.asPaddingValues(density))
-    }
-    // Using an invisible spacer to get access to a Modifier
-    Spacer(
-        Modifier.onConsumedWindowInsetsChanged {
-            paddingValues = insets.exclude(it)
-                .asPaddingValues(density)
-        }
-    )
-    return paddingValues
-}
-
-@Composable
-fun insetsExcludingConsumed(insets: WindowInsets): WindowInsets {
-    var paddingValues by remember { mutableStateOf(insets) }
-    // Using an invisible spacer here to just monitor the consumed
-    Spacer(
-        Modifier.onConsumedWindowInsetsChanged {
-            paddingValues = insets.exclude(it)
-        }
-    )
-    return paddingValues
 }
 
 @Composable

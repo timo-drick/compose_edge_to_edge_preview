@@ -1,8 +1,10 @@
-package de.telekom.edgetoedgetestlib
+package de.drick.compose.edgetoedgetestlib
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -46,6 +48,9 @@ fun SemanticsWindowInsetsAnchor() {
     })
 }
 
+/**
+ * Searches for the window insets in semantic tree.
+ */
 fun SemanticsNode.findWindowInsets(): TestWindowInsets? =
     root?.semanticsOwner?.rootSemanticsNode?.searchChildren()
 private fun SemanticsNode.searchChildren(): TestWindowInsets? {
@@ -257,7 +262,7 @@ fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
                     overlapInsets.joinToString { getNameFromWindowInsetType(it.type) }
                 appendLine("[$overlappingInsetTypes] overlap with node!")
                 appendLine("scroll position: $scrollPosition")
-                val device = "${android.os.Build.MODEL} - ${android.os.Build.VERSION.RELEASE}"
+                val device = "${Build.MODEL} - ${Build.VERSION.RELEASE}"
                 appendLine("Device: $device")
                 val screenshotBaseFolder = "../../../outputs/connected_android_test_additional_output/debugAndroidTest/connected"
                 val screenshotFile = "$screenshotBaseFolder/$device/$fileName.png"
@@ -311,12 +316,12 @@ fun TestWindowInsets.isNotEmpty(): Boolean =
     windowWidth > 0 && windowHeight > 0 &&
             insetList.any {
                 it.insetIgnoringVisibility.getTop(density) > 0 ||
-                        it.insetIgnoringVisibility.getRight(density, ld) > 0 ||
-                        it.insetIgnoringVisibility.getBottom(density) > 0 ||
-                        it.insetIgnoringVisibility.getLeft(density, ld) > 0
+                it.insetIgnoringVisibility.getRight(density, ld) > 0 ||
+                it.insetIgnoringVisibility.getBottom(density) > 0 ||
+                it.insetIgnoringVisibility.getLeft(density, ld) > 0
             }
 
-fun androidx.compose.foundation.layout.WindowInsets.toBounds(
+fun WindowInsets.toBounds(
     windowSize: Size,
     sides: WindowInsetsSides
 ): List<Rect> = buildList {

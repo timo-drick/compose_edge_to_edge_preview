@@ -1,9 +1,6 @@
 package de.drick.compose.edgetoedgepreview
 
-import android.app.UiAutomation
 import android.os.Build
-import android.os.SystemClock
-import android.view.WindowInsets
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -18,15 +15,20 @@ import androidx.compose.ui.test.printToLog
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import de.drick.compose.edgetoedgepreview.ui.theme.ComposeLibrariesTheme
-import de.telekom.edgetoedgetestlib.SemanticsWindowInsetsAnchor
-import de.telekom.edgetoedgetestlib.assertAllWindowInsets
+import de.drick.compose.edgetoedgepreviewlib.NavigationMode
+import de.drick.compose.edgetoedgetestlib.SemanticsWindowInsetsAnchor
+import de.drick.compose.edgetoedgetestlib.TestRotation
+import de.drick.compose.edgetoedgetestlib.assertAllWindowInsets
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
-class EdgeToEdgeTest(rotation: TestRotation): EdgeToEdgeTestNoActivity(rotation) {
+class EdgeToEdgeTest(
+    rotation: TestRotation,
+    navigationMode: NavigationMode
+): EdgeToEdgeTestNoActivity(rotation, navigationMode) {
 
     override val composeTestRule = createAndroidComposeRule<TestActivity>()
 

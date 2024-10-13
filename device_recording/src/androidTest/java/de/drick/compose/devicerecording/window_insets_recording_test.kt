@@ -1,78 +1,84 @@
 package de.drick.compose.devicerecording
 
-import android.app.UiAutomation
 import android.os.Build
-import android.os.SystemClock
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onRoot
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.io.PlatformTestStorageRegistry
-import androidx.test.uiautomator.UiDevice
 import de.drick.compose.devicerecording.ui.theme.ComposeEdgeToEdgePreviewLibraryTheme
+import de.drick.compose.edgetoedgepreviewlib.NavigationMode
+import de.drick.compose.edgetoedgetestlib.DeviceConfigurationUtils
+import de.drick.compose.edgetoedgetestlib.TestRotation
+import de.drick.compose.edgetoedgetestlib.initializeActivity
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 
 
-class RecordWindowInsets {
+@RunWith(Parameterized::class)
+class RecordWindowInsets(
+    val rotation: TestRotation,
+    val navigationMode: NavigationMode,
+) {
+    @get:Rule
+    val composeTestRule = createAndroidComposeRule<RecordActivity>()
 
-    @get:Rule val composeTestRule = createAndroidComposeRule<RecordActivity>()
+    private val config = DeviceConfigurationUtils()
 
-    //@get:Rule
-    //val composeTestRule = createEmptyComposeRule()
+    companion object {
+        @JvmStatic
+        @Parameters(name = "{0},{1}")
+        fun data(): Collection<Array<Any>> = buildList {
+            TestRotation.entries.forEach { rotation ->
+                add(arrayOf(rotation, NavigationMode.ThreeButton))
+                add(arrayOf(rotation, NavigationMode.Gesture))
+            }
+        }
+    }
 
-    //private lateinit var scenario: ActivityScenario<MainActivity>
-
-    /*@Before
+    @Before
     fun setup() {
-        scenario = ActivityScenario.launch(MainActivity::class.java)
-    }*/
-
-    @Test
-    fun recordEdgeToEdge0() {
-        recordScreen(UiAutomation.ROTATION_FREEZE_0)
-    }
-    @Test
-    fun recordEdgeToEdge90() {
-        recordScreen(UiAutomation.ROTATION_FREEZE_90)
-    }
-    @Test
-    fun recordEdgeToEdge180() {
-        recordScreen(UiAutomation.ROTATION_FREEZE_180)
-    }
-    @Test
-    fun recordEdgeToEdge270() {
-        recordScreen(UiAutomation.ROTATION_FREEZE_270)
+        config.prepare {
+            turnScreenOn()
+            rotateScreen(rotation)
+            setNavigationMode(navigationMode == NavigationMode.ThreeButton)
+            sleep(1000)
+        }
     }
 
-    private fun recordScreen(rotation: Int) {
+    @After
+    fun resetDevice() {
+        config.restore()
+    }
+
+    @Test
+    fun recordScreen() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val platformTestStorage = PlatformTestStorageRegistry.getInstance()
-        val device = UiDevice.getInstance(instrumentation)
-        instrumentation.uiAutomation.setRotation(rotation)
-        instrumentation.waitForIdleSync()
-        SystemClock.sleep(1000)
 
-        val activity = composeTestRule.activity
         var recordedInsets: RecordedInsets? = null
+        val screenshotFileName = "uiAutomatorScreenshot_${rotation}_${navigationMode}"
         composeTestRule.setContent {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                SideEffect {
-                    activity.window.isNavigationBarContrastEnforced = false
+            initializeActivity {
+                enableEdgeToEdge()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    window.isNavigationBarContrastEnforced = false
                 }
             }
+            recordedInsets = recordInsets("$screenshotFileName.png")
             ComposeEdgeToEdgePreviewLibraryTheme {
-                recordedInsets = recordInsets()
                 Box(
                     Modifier
                         .fillMaxSize()
@@ -81,23 +87,17 @@ class RecordWindowInsets {
             }
         }
         composeTestRule.waitForIdle()
-        composeTestRule.onRoot()
-            .captureToImage()
-            .asAndroidBitmap()
-            .writeToTestStorage("testImage1_$rotation")
-        instrumentation.getUiAutomation()
+        instrumentation.uiAutomation
             .takeScreenshot()
-            .writeToTestStorage("uiAutomatorScreenshot_$rotation")
+            .writeToTestStorage(screenshotFileName)
         recordedInsets?.let { insets ->
             val json = Json {
                 prettyPrint = true
             }
-            platformTestStorage.openOutputFile("test_$rotation.json").use { outputStream ->
+            platformTestStorage.openOutputFile("test_${rotation}_${navigationMode}.json").use { outputStream ->
                 val string = json.encodeToString(insets)
                 outputStream.write(string.toByteArray())
             }
         }
-
-
     }
 }

@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.compose.material3.adaptive:adaptive:${Versions.composeAdaptive}")
     implementation("junit:junit:${Versions.junit}")
     implementation("androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}")
+    implementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
 }
 
 publishing {

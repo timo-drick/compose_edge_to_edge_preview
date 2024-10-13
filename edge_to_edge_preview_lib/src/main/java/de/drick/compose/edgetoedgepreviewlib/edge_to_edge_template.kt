@@ -35,8 +35,21 @@ class NavigationPreviewProvider : PreviewParameterProvider<NavigationMode> {
 
 enum class NavigationMode {
     ThreeButton,
-    TwoButton,
     Gesture
+}
+
+enum class InsetMode {
+    Visible,
+    /**
+     * Setting status or navigation bars visibility to Hidden can be used to test
+     * code that uses WindowInsets.systemBarsIgnoringVisibility.
+     * inset will be 0 but insetIgnoringVisibility will be normal
+     */
+    Hidden,
+    /**
+     * Insets visible and hidden insets are 0
+     */
+    Off
 }
 
 @Composable
@@ -44,15 +57,13 @@ fun EdgeToEdgeTemplate(
     modifier: Modifier = Modifier,
     navMode: NavigationMode = NavigationMode.ThreeButton,
     cameraCutoutMode: CameraCutoutMode = CameraCutoutMode.Middle,
-    isInvertedOrientation: Boolean = false,// in landscape mode it would be that the camera cutout is
-    // on the right and navigation buttons will be on the left
+    isInvertedOrientation: Boolean = false, // in landscape mode it would be that the camera cutout is
+                                            // on the right and navigation buttons will be on the left
     showInsetsBorder: Boolean = true,
-    // Setting status or navigation bars visibility to false can be used to test
-    // code that uses WindowInsets.systemBarsIgnoringVisibility
-    isStatusBarVisible: Boolean = true,
-    isStatusBarContrastEnforced: Boolean = false,
-    isNavigationBarVisible: Boolean = true,
+    statusBarMode: InsetMode = InsetMode.Visible,
+    navigationBarMode: InsetMode = InsetMode.Visible,
     isNavigationBarContrastEnforced: Boolean = true,
+    captionBarMode: InsetMode = InsetMode.Off,
     useHiddenApiHack: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -74,29 +85,45 @@ fun EdgeToEdgeTemplate(
     val navigationBarSizeDp = if (navMode == NavigationMode.ThreeButton) 48.dp else 32.dp
     val cameraCutoutSizeDp = if (cameraCutoutMode != CameraCutoutMode.None) 52.dp else 0.dp
     val statusBarHeightDp = if (cameraCutoutPos == InsetPos.TOP) max(24.dp, cameraCutoutSizeDp) else 24.dp
+    val captionBarHeightDp = 42.dp
 
     val statusBarHeight = with(LocalDensity.current) { statusBarHeightDp.roundToPx() }
     val navigationBarSize = with(LocalDensity.current) { navigationBarSizeDp.roundToPx() }
     val cameraCutoutSize = with(LocalDensity.current) { cameraCutoutSizeDp.roundToPx() }
+    val captionBarSize = with(LocalDensity.current) { captionBarHeightDp.roundToPx() }
+
     val windowInsets = buildInsets {
-        setInset(
-            pos = InsetPos.TOP,
-            type = WindowInsetsCompat.Type.statusBars(),
-            size = statusBarHeight,
-            isVisible = isStatusBarVisible
-        )
-        val navSize = if (cameraCutoutPos == InsetPos.BOTTOM && navigationPos == InsetPos.BOTTOM) navigationBarSize + cameraCutoutSize else navigationBarSize
-        setInset(
-            pos = navigationPos,
-            type = WindowInsetsCompat.Type.navigationBars(),
-            size = navSize,
-            isVisible = isNavigationBarVisible
-        )
+        if (statusBarMode != InsetMode.Off) {
+            setInset(
+                pos = InsetPos.TOP,
+                type = WindowInsetsCompat.Type.statusBars(),
+                size = statusBarHeight,
+                isVisible = statusBarMode == InsetMode.Visible
+            )
+        }
+        if (navigationBarMode != InsetMode.Off) {
+            val navSize =
+                if (cameraCutoutPos == InsetPos.BOTTOM && navigationPos == InsetPos.BOTTOM) navigationBarSize + cameraCutoutSize else navigationBarSize
+            setInset(
+                pos = navigationPos,
+                type = WindowInsetsCompat.Type.navigationBars(),
+                size = navSize,
+                isVisible = navigationBarMode == InsetMode.Visible
+            )
+        }
         if (cameraCutoutMode != CameraCutoutMode.None) {
             setInset(
                 pos = cameraCutoutPos,
                 type = WindowInsetsCompat.Type.displayCutout(),
                 size = cameraCutoutSize,
+                isVisible = true
+            )
+        }
+        if (captionBarMode != InsetMode.Off) {
+            setInset(
+                pos = InsetPos.TOP,
+                type = WindowInsetsCompat.Type.captionBar(),
+                size = captionBarSize,
                 isVisible = true
             )
         }
@@ -131,21 +158,34 @@ fun EdgeToEdgeTemplate(
 
                 else -> PaddingValues()
             }
-            StatusBar(
-                modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
-                    .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-                    .padding(statusBarCutoutPadding)
-                    .height(statusBarHeightDp)
-                    .align(Alignment.TopCenter)
-                    .zIndex(1000f)
-                    .then(borderModifier)
-                    .drawWithContent {
-                        // draw status bar only when it is visible
-                        if (isStatusBarVisible) drawContent()
-                    }.clearAndSetSemantics {  },
-                isDarkMode = isDarkMode
-            )
+            if (statusBarMode != InsetMode.Off) {
+                StatusBar(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+                        .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+                        .padding(statusBarCutoutPadding)
+                        .height(statusBarHeightDp)
+                        .align(Alignment.TopCenter)
+                        .zIndex(1000f)
+                        .then(borderModifier)
+                        .drawWithContent {
+                            // draw status bar only when it is visible
+                            if (statusBarMode == InsetMode.Visible) drawContent()
+                        }.clearAndSetSemantics { },
+                    isDarkMode = isDarkMode
+                )
+            }
+            if (captionBarMode != InsetMode.Off) {
+                CaptionBar(
+                    modifier = Modifier
+                        .height(captionBarHeightDp)
+                        .align(Alignment.TopCenter)
+                        .zIndex(1000f)
+                        .then(borderModifier)
+                        .clearAndSetSemantics { },
+                    isDarkMode = isDarkMode
+                )
+            }
 
             val navigationBarAlignment = when (navigationPos) {
                 InsetPos.LEFT -> AbsoluteAlignment.CenterLeft
@@ -153,28 +193,30 @@ fun EdgeToEdgeTemplate(
                 InsetPos.RIGHT -> AbsoluteAlignment.CenterRight
                 InsetPos.BOTTOM -> AbsoluteAlignment.BottomLeft
             }
-            NavigationBar(
-                size = navigationBarSizeDp,
-                modifier = Modifier
-                    .windowInsetsPadding(
-                        WindowInsets.displayCutout.only(
-                            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+            if (navigationBarMode != InsetMode.Off) {
+                NavigationBar(
+                    size = navigationBarSizeDp,
+                    modifier = Modifier
+                        .windowInsetsPadding(
+                            WindowInsets.displayCutout.only(
+                                WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                            )
                         )
-                    )
-                    .align(navigationBarAlignment)
-                    .zIndex(1000f)
-                    .then(borderModifier)
-                    .zIndex(if (isNavigationBarVisible) 1000f else 0f)
-                    .drawWithContent {
-                        // draw navigation bar only when it is visible
-                        if (isNavigationBarVisible) drawContent()
-                    }
-                    .clearAndSetSemantics {  },
-                isVertical = isLandscape,
-                isDarkMode = isDarkMode,
-                navMode = navMode,
-                alpha = if (isNavigationBarContrastEnforced) 0.5f else 1f
-            )
+                        .align(navigationBarAlignment)
+                        .zIndex(1000f)
+                        .then(borderModifier)
+                        .zIndex(if (navigationBarMode == InsetMode.Visible) 1000f else 0f)
+                        .drawWithContent {
+                            // draw navigation bar only when it is visible
+                            if (navigationBarMode == InsetMode.Visible) drawContent()
+                        }
+                        .clearAndSetSemantics { },
+                    isVertical = isLandscape,
+                    isDarkMode = isDarkMode,
+                    navMode = navMode,
+                    alpha = if (isNavigationBarContrastEnforced) 0.5f else 1f
+                )
+            }
         }
     }
 }

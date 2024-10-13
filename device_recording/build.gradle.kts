@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "de.drick.compose.devicerecording"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "de.drick.compose.devicerecording"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -32,11 +32,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -67,7 +67,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material3.adaptive:adaptive:1.0.0-beta04")
+    implementation("androidx.compose.material3.adaptive:adaptive")
 
     lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -75,9 +75,10 @@ dependencies {
 
     //Testing
     testImplementation("junit:junit:${Versions.junit}")
+
+    androidTestImplementation(project(":edge_to_edge_test_lib"))
     androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
     androidTestImplementation(composeBom)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }

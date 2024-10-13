@@ -21,7 +21,6 @@ private fun PreviewEdgeToEdgePortraitListDetail() {
     EdgeToEdgeTemplate(
         navMode = NavigationMode.ThreeButton,
         cameraCutoutMode = CameraCutoutMode.None,
-        isStatusBarVisible = true,
         isInvertedOrientation = false,
         showInsetsBorder = true,
     ) {
