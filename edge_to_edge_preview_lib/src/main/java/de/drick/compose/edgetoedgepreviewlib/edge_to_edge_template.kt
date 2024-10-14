@@ -55,6 +55,7 @@ enum class InsetMode {
 @Composable
 fun EdgeToEdgeTemplate(
     modifier: Modifier = Modifier,
+    isDarkMode: Boolean = isSystemInDarkTheme(),
     navMode: NavigationMode = NavigationMode.ThreeButton,
     cameraCutoutMode: CameraCutoutMode = CameraCutoutMode.Middle,
     isInvertedOrientation: Boolean = false, // in landscape mode it would be that the camera cutout is
@@ -81,7 +82,6 @@ fun EdgeToEdgeTemplate(
         else -> InsetPos.TOP
     }
 
-    val isDarkMode = isSystemInDarkTheme()
     val navigationBarSizeDp = if (navMode == NavigationMode.ThreeButton) 48.dp else 32.dp
     val cameraCutoutSizeDp = if (cameraCutoutMode != CameraCutoutMode.None) 52.dp else 0.dp
     val statusBarHeightDp = if (cameraCutoutPos == InsetPos.TOP) max(24.dp, cameraCutoutSizeDp) else 24.dp
