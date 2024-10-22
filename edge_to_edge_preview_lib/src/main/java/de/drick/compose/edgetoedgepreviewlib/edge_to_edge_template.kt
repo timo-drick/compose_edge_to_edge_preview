@@ -214,7 +214,7 @@ fun EdgeToEdgeTemplate(
                     isVertical = isLandscape,
                     isDarkMode = isDarkMode,
                     navMode = navMode,
-                    alpha = if (isNavigationBarContrastEnforced) 0.5f else 1f
+                    backgroundAlpha = if (isNavigationBarContrastEnforced) 0.5f else 0f
                 )
             }
         }
