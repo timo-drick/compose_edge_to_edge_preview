@@ -250,6 +250,30 @@ val Icons_AutoMirrored_Filled_ArrowBack: ImageVector
 private var _arrowBack: ImageVector? = null
 
 
+
+val Icons_Navigation_Back: ImageVector
+    get() {
+        if (_playArrow != null) {
+            return _playArrow!!
+        }
+        _playArrow = materialIcon(name = "Rounded.PlayArrow") {
+            materialPath {
+                moveTo(8.0f, 6.82f)
+                verticalLineToRelative(10.36f)
+                curveToRelative(0.0f, 0.79f, 0.87f, 1.27f, 1.54f, 0.84f)
+                lineToRelative(8.14f, -5.18f)
+                curveToRelative(0.62f, -0.39f, 0.62f, -1.29f, 0.0f, -1.69f)
+                lineTo(9.54f, 5.98f)
+                curveTo(8.87f, 5.55f, 8.0f, 6.03f, 8.0f, 6.82f)
+                close()
+            }
+        }
+        return _playArrow!!
+    }
+
+private var _playArrow: ImageVector? = null
+
+
 val Icons_Filled_Circle: ImageVector
     get() {
         if (_circle != null) {
@@ -276,12 +300,17 @@ val Icons_Filled_Rectangle: ImageVector
         if (_rectangle != null) {
             return _rectangle!!
         }
-        _rectangle = materialIcon(name = "Filled.Rectangle") {
+        _rectangle = materialIcon(name = "Rounded.Rectangle") {
             materialPath {
-                moveTo(2.0f, 4.0f)
-                horizontalLineToRelative(20.0f)
-                verticalLineToRelative(16.0f)
-                horizontalLineToRelative(-20.0f)
+                moveTo(2.0f, 6.0f)
+                verticalLineToRelative(12.0f)
+                curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
+                horizontalLineToRelative(12.0f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                verticalLineTo(6.0f)
+                curveToRelative(0.0f, -1.1f, -0.9f, -2.0f, -2.0f, -2.0f)
+                horizontalLineTo(4.0f)
+                curveTo(2.9f, 4.0f, 2.0f, 4.9f, 2.0f, 6.0f)
                 close()
             }
         }

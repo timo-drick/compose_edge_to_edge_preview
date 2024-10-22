@@ -15,23 +15,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.local.compose.icons.Icons_AutoMirrored_Filled_ArrowBack
 import androidx.local.compose.icons.Icons_Filled_Circle
 import androidx.local.compose.icons.Icons_Filled_Rectangle
+import androidx.local.compose.icons.Icons_Navigation_Back
 
-@Preview(name = "Navigation bar",
-    device = "id:pixel_8"
-)
+@Preview(name = "Navigation bar", device = "id:pixel_8")
 @Composable
 private fun PreviewNavigationBar() {
     NavigationBar(
         size = 50.dp,
-        navMode = NavigationMode.ThreeButton
+        navMode = NavigationMode.ThreeButton,
+    )
+}
+@Preview
+@Composable
+private fun PreviewNavigationBarLandscape() {
+    NavigationBar(
+        size = 50.dp,
+        navMode = NavigationMode.ThreeButton,
+        isVertical = true
     )
 }
 
@@ -42,13 +50,13 @@ fun NavigationBar(
     isVertical: Boolean = false,
     isDarkMode: Boolean = true,
     navMode: NavigationMode = NavigationMode.ThreeButton,
-    alpha: Float = 0.5f,
+    backgroundAlpha: Float = 0.5f,
 ) {
     val contentColor = if (isDarkMode) Color.LightGray else Color.DarkGray
     val backgroundColor = if (isDarkMode)
-        Color.Black.copy(alpha = alpha)
+        Color.Black.copy(alpha = backgroundAlpha)
     else
-        Color.White.copy(alpha = alpha)
+        Color.White.copy(alpha = backgroundAlpha)
     val iconSize = 32.dp
     when {
         navMode == NavigationMode.Gesture -> {
@@ -76,26 +84,11 @@ fun NavigationBar(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(Modifier.weight(1f))
-                Image(
-                    modifier = Modifier.size(size),
-                    imageVector = Icons_AutoMirrored_Filled_ArrowBack,
-                    contentDescription = "Back",
-                    colorFilter = ColorFilter.tint(contentColor)
-                )
+                IconNavigateBack(iconSize, contentColor)
                 Spacer(Modifier.weight(1f))
-                Image(
-                    modifier = Modifier.size(iconSize),
-                    imageVector = Icons_Filled_Circle,
-                    contentDescription = "Home",
-                    colorFilter = ColorFilter.tint(contentColor)
-                )
+                IconNavigateHome(iconSize, contentColor)
                 Spacer(Modifier.weight(1f))
-                Image(
-                    modifier = Modifier.size(iconSize),
-                    imageVector = Icons_Filled_Rectangle,
-                    contentDescription = "History",
-                    colorFilter = ColorFilter.tint(contentColor)
-                )
+                IconNavigateHistory(iconSize, contentColor)
                 Spacer(Modifier.weight(1f))
             }
         }
@@ -109,28 +102,54 @@ fun NavigationBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(Modifier.weight(1f))
-                Image(
-                    modifier = Modifier.size(iconSize),
-                    imageVector = Icons_Filled_Rectangle,
-                    contentDescription = "History",
-                    colorFilter = ColorFilter.tint(contentColor)
-                )
+                IconNavigateBack(iconSize, contentColor)
                 Spacer(Modifier.weight(1f))
-                Image(
-                    modifier = Modifier.size(iconSize),
-                    imageVector = Icons_Filled_Circle,
-                    contentDescription = "Home",
-                    colorFilter = ColorFilter.tint(contentColor)
-                )
+                IconNavigateHome(iconSize, contentColor)
                 Spacer(Modifier.weight(1f))
-                Image(
-                    modifier = Modifier.size(iconSize),
-                    imageVector = Icons_AutoMirrored_Filled_ArrowBack,
-                    contentDescription = "Back",
-                    colorFilter = ColorFilter.tint(contentColor)
-                )
+                IconNavigateHistory(iconSize, contentColor)
                 Spacer(Modifier.weight(1f))
             }
         }
     }
+}
+
+@Composable
+private fun IconNavigateBack(
+    iconSize: Dp,
+    contentColor: Color
+) {
+    Image(
+        modifier = Modifier
+            .size(iconSize)
+            .scale(-1f),
+        imageVector = Icons_Navigation_Back,
+        contentDescription = "Back",
+        colorFilter = ColorFilter.tint(contentColor)
+    )
+}
+
+@Composable
+private fun IconNavigateHome(
+    iconSize: Dp,
+    contentColor: Color
+) {
+    Image(
+        modifier = Modifier.size(iconSize - 8.dp),
+        imageVector = Icons_Filled_Circle,
+        contentDescription = "Home",
+        colorFilter = ColorFilter.tint(contentColor)
+    )
+}
+
+@Composable
+private fun IconNavigateHistory(
+    iconSize: Dp,
+    contentColor: Color
+) {
+    Image(
+        modifier = Modifier.size(iconSize - 4.dp),
+        imageVector = Icons_Filled_Rectangle,
+        contentDescription = "History",
+        colorFilter = ColorFilter.tint(contentColor)
+    )
 }
