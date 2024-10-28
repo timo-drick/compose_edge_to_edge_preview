@@ -44,6 +44,10 @@ fun ViewInsetInjector(
     useHiddenApiHack: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    /*DeviceConfigurationOverride(
+        override = DeviceConfigurationOverride.WindowInsets(windowInsets),
+        content = content
+    )*/
     if (useHiddenApiHack) {
         val windowInsetsState = rememberWindowInsetsState()
         LaunchedEffect(Unit) {
