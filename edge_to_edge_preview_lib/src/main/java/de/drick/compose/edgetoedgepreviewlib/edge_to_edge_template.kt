@@ -24,13 +24,18 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowInsetsCompat
 
-class NavigationPreviewProvider : PreviewParameterProvider<NavigationMode> {
-    override val values = sequenceOf(NavigationMode.ThreeButton, NavigationMode.Gesture)
+class WindowInsetsPreviewProvider : PreviewParameterProvider<InsetsConfig> {
+    override val values = sequenceOf(
+        InsetsConfig(),
+        InsetsConfig(navMode = NavigationMode.Gesture),
+        InsetsConfig(navMode = NavigationMode.Gesture, isInvertedOrientation = true)
+    )
 }
 
 enum class NavigationMode {
@@ -52,15 +57,51 @@ enum class InsetMode {
     Off
 }
 
+data class InsetsConfig(
+    val navMode: NavigationMode = NavigationMode.ThreeButton,
+    val cameraCutoutMode: CameraCutoutMode = CameraCutoutMode.Middle,
+    val cameraCutoutSize: Dp = 52.dp,
+    /**
+     * When inverted in landscape mode it would be that the camera cutout is on the right and
+     * navigation buttons will be on the left
+     */
+    val isInvertedOrientation: Boolean = false,
+    val showInsetsBorder: Boolean = false,
+    val statusBarMode: InsetMode = InsetMode.Visible,
+    val statusBarSize: Dp = 24.dp,
+    val navigationBarMode: InsetMode = InsetMode.Visible,
+    val navigationBarSize: Dp = if (navMode == NavigationMode.ThreeButton) 48.dp else 32.dp,
+    val isNavigationBarContrastEnforced: Boolean = true,
+    val captionBarMode: InsetMode = InsetMode.Off,
+    val captionBarSize: Dp = 42.dp,
+    val useHiddenApiHack: Boolean = false
+) {
+    companion object {
+        val Default = InsetsConfig()
+        val GestureNav = InsetsConfig(navMode = NavigationMode.Gesture)
+        val InvertedOrientation = InsetsConfig(isInvertedOrientation = true)
+        val DesktopMode = InsetsConfig(
+            statusBarMode = InsetMode.Off,
+            navigationBarMode = InsetMode.Off,
+            captionBarMode = InsetMode.Visible,
+            cameraCutoutMode = CameraCutoutMode.None
+        )
+    }
+}
+
 @Composable
 fun EdgeToEdgeTemplate(
     modifier: Modifier = Modifier,
     isDarkMode: Boolean = isSystemInDarkTheme(),
+    isLandscape: Boolean = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
     navMode: NavigationMode = NavigationMode.ThreeButton,
     cameraCutoutMode: CameraCutoutMode = CameraCutoutMode.Middle,
-    isInvertedOrientation: Boolean = false, // in landscape mode it would be that the camera cutout is
-                                            // on the right and navigation buttons will be on the left
-    showInsetsBorder: Boolean = true,
+    /**
+     * In landscape mode it would be that the camera cutout is on the right and
+     * navigation buttons will be on the left
+     */
+    isInvertedOrientation: Boolean = false,
+    showInsetsBorder: Boolean = false,
     statusBarMode: InsetMode = InsetMode.Visible,
     navigationBarMode: InsetMode = InsetMode.Visible,
     isNavigationBarContrastEnforced: Boolean = true,
@@ -68,24 +109,52 @@ fun EdgeToEdgeTemplate(
     useHiddenApiHack: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val config = InsetsConfig(
+        navMode = navMode,
+        statusBarMode = statusBarMode,
+        navigationBarMode = navigationBarMode,
+        captionBarMode = captionBarMode,
+        cameraCutoutMode = cameraCutoutMode,
+        isInvertedOrientation = isInvertedOrientation,
+        showInsetsBorder = showInsetsBorder,
+        isNavigationBarContrastEnforced = isNavigationBarContrastEnforced,
+        useHiddenApiHack = useHiddenApiHack
+    )
+    EdgeToEdgeTemplate(
+        modifier = modifier,
+        cfg = config,
+        isDarkMode = isDarkMode,
+        isLandscape = isLandscape,
+        content = content
+    )
+}
+
+@Composable
+fun EdgeToEdgeTemplate(
+    cfg: InsetsConfig,
+    modifier: Modifier = Modifier,
+    isDarkMode: Boolean = isSystemInDarkTheme(),
+    isLandscape: Boolean = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
+    content: @Composable () -> Unit
+) {
     val navigationPos = when {
-        navMode == NavigationMode.Gesture -> InsetPos.BOTTOM
-        isLandscape && isInvertedOrientation -> InsetPos.LEFT
+        cfg.navMode == NavigationMode.Gesture -> InsetPos.BOTTOM
+        isLandscape && cfg.isInvertedOrientation -> InsetPos.LEFT
         isLandscape -> InsetPos.RIGHT
         else -> InsetPos.BOTTOM
     }
     val cameraCutoutPos = when {
-        isLandscape.not() && isInvertedOrientation -> InsetPos.BOTTOM
-        isLandscape && isInvertedOrientation.not() -> InsetPos.LEFT
+        isLandscape.not() && cfg.isInvertedOrientation -> InsetPos.BOTTOM
+        isLandscape && cfg.isInvertedOrientation.not() -> InsetPos.LEFT
         isLandscape -> InsetPos.RIGHT
         else -> InsetPos.TOP
     }
 
-    val navigationBarSizeDp = if (navMode == NavigationMode.ThreeButton) 48.dp else 32.dp
-    val cameraCutoutSizeDp = if (cameraCutoutMode != CameraCutoutMode.None) 52.dp else 0.dp
-    val statusBarHeightDp = if (cameraCutoutPos == InsetPos.TOP) max(24.dp, cameraCutoutSizeDp) else 24.dp
-    val captionBarHeightDp = 42.dp
+    val navigationBarSizeDp = cfg.navigationBarSize
+    val cameraCutoutSizeDp = if (cfg.cameraCutoutMode != CameraCutoutMode.None) cfg.cameraCutoutSize else 0.dp
+
+    val statusBarHeightDp = if (cameraCutoutPos == InsetPos.TOP) max(cfg.statusBarSize, cameraCutoutSizeDp) else cfg.statusBarSize
+    val captionBarHeightDp = cfg.captionBarSize
 
     val statusBarHeight = with(LocalDensity.current) { statusBarHeightDp.roundToPx() }
     val navigationBarSize = with(LocalDensity.current) { navigationBarSizeDp.roundToPx() }
@@ -93,25 +162,25 @@ fun EdgeToEdgeTemplate(
     val captionBarSize = with(LocalDensity.current) { captionBarHeightDp.roundToPx() }
 
     val windowInsets = buildInsets {
-        if (statusBarMode != InsetMode.Off) {
+        if (cfg.statusBarMode != InsetMode.Off) {
             setInset(
                 pos = InsetPos.TOP,
                 type = WindowInsetsCompat.Type.statusBars(),
                 size = statusBarHeight,
-                isVisible = statusBarMode == InsetMode.Visible
+                isVisible = cfg.statusBarMode == InsetMode.Visible
             )
         }
-        if (navigationBarMode != InsetMode.Off) {
+        if (cfg.navigationBarMode != InsetMode.Off) {
             val navSize =
                 if (cameraCutoutPos == InsetPos.BOTTOM && navigationPos == InsetPos.BOTTOM) navigationBarSize + cameraCutoutSize else navigationBarSize
             setInset(
                 pos = navigationPos,
                 type = WindowInsetsCompat.Type.navigationBars(),
                 size = navSize,
-                isVisible = navigationBarMode == InsetMode.Visible
+                isVisible = cfg.navigationBarMode == InsetMode.Visible
             )
         }
-        if (cameraCutoutMode != CameraCutoutMode.None) {
+        if (cfg.cameraCutoutMode != CameraCutoutMode.None) {
             setInset(
                 pos = cameraCutoutPos,
                 type = WindowInsetsCompat.Type.displayCutout(),
@@ -119,7 +188,7 @@ fun EdgeToEdgeTemplate(
                 isVisible = true
             )
         }
-        if (captionBarMode != InsetMode.Off) {
+        if (cfg.captionBarMode != InsetMode.Off) {
             setInset(
                 pos = InsetPos.TOP,
                 type = WindowInsetsCompat.Type.captionBar(),
@@ -128,10 +197,10 @@ fun EdgeToEdgeTemplate(
             )
         }
     }
-    ViewInsetInjector(windowInsets, useHiddenApiHack) {
+    ViewInsetInjector(windowInsets, cfg.useHiddenApiHack) {
         Box(modifier.fillMaxSize()) {
             val borderModifier =
-                if (showInsetsBorder) Modifier.border(2.dp, Color.Red) else Modifier
+                if (cfg.showInsetsBorder) Modifier.border(2.dp, Color.Red) else Modifier
             val cameraCutoutAlignment = when (cameraCutoutPos) {
                 InsetPos.LEFT -> AbsoluteAlignment.CenterLeft
                 InsetPos.TOP -> AbsoluteAlignment.TopLeft
@@ -145,20 +214,20 @@ fun EdgeToEdgeTemplate(
                     .align(cameraCutoutAlignment)
                     .then(borderModifier)
                     .clearAndSetSemantics {  },
-                cutoutMode = cameraCutoutMode,
+                cutoutMode = cfg.cameraCutoutMode,
                 isVertical = isLandscape,
                 cutoutSize = cameraCutoutSizeDp
             )
             val statusBarCutoutPadding = when {
-                cameraCutoutMode == CameraCutoutMode.Start && cameraCutoutPos == InsetPos.TOP ->
+                cfg.cameraCutoutMode == CameraCutoutMode.Start && cameraCutoutPos == InsetPos.TOP ->
                     PaddingValues(start = cameraCutoutSizeDp)
 
-                cameraCutoutMode == CameraCutoutMode.End && cameraCutoutPos == InsetPos.TOP ->
+                cfg.cameraCutoutMode == CameraCutoutMode.End && cameraCutoutPos == InsetPos.TOP ->
                     PaddingValues(end = cameraCutoutSizeDp)
 
                 else -> PaddingValues()
             }
-            if (statusBarMode != InsetMode.Off) {
+            if (cfg.statusBarMode != InsetMode.Off) {
                 StatusBar(
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
@@ -170,12 +239,12 @@ fun EdgeToEdgeTemplate(
                         .then(borderModifier)
                         .drawWithContent {
                             // draw status bar only when it is visible
-                            if (statusBarMode == InsetMode.Visible) drawContent()
+                            if (cfg.statusBarMode == InsetMode.Visible) drawContent()
                         }.clearAndSetSemantics { },
                     isDarkMode = isDarkMode
                 )
             }
-            if (captionBarMode != InsetMode.Off) {
+            if (cfg.captionBarMode != InsetMode.Off) {
                 CaptionBar(
                     modifier = Modifier
                         .height(captionBarHeightDp)
@@ -193,7 +262,7 @@ fun EdgeToEdgeTemplate(
                 InsetPos.RIGHT -> AbsoluteAlignment.CenterRight
                 InsetPos.BOTTOM -> AbsoluteAlignment.BottomLeft
             }
-            if (navigationBarMode != InsetMode.Off) {
+            if (cfg.navigationBarMode != InsetMode.Off) {
                 NavigationBar(
                     size = navigationBarSizeDp,
                     modifier = Modifier
@@ -205,16 +274,16 @@ fun EdgeToEdgeTemplate(
                         .align(navigationBarAlignment)
                         .zIndex(1000f)
                         .then(borderModifier)
-                        .zIndex(if (navigationBarMode == InsetMode.Visible) 1000f else 0f)
+                        .zIndex(if (cfg.navigationBarMode == InsetMode.Visible) 1000f else 0f)
                         .drawWithContent {
                             // draw navigation bar only when it is visible
-                            if (navigationBarMode == InsetMode.Visible) drawContent()
+                            if (cfg.navigationBarMode == InsetMode.Visible) drawContent()
                         }
                         .clearAndSetSemantics { },
                     isVertical = isLandscape,
                     isDarkMode = isDarkMode,
-                    navMode = navMode,
-                    backgroundAlpha = if (isNavigationBarContrastEnforced) 0.5f else 0f
+                    navMode = cfg.navMode,
+                    backgroundAlpha = if (cfg.isNavigationBarContrastEnforced) 0.5f else 0f
                 )
             }
         }
