@@ -13,13 +13,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.local.compose.icons.Icons_Filled_Circle
 import androidx.local.compose.icons.Icons_Filled_Rectangle
@@ -32,6 +35,18 @@ private fun PreviewNavigationBar() {
         size = 50.dp,
         navMode = NavigationMode.ThreeButton,
     )
+}
+@Preview(name = "Navigation bar", device = "id:pixel_8")
+@Composable
+private fun PreviewNavigationBarRtl() {
+    CompositionLocalProvider(
+        LocalLayoutDirection provides LayoutDirection.Rtl
+    ) {
+        NavigationBar(
+            size = 50.dp,
+            navMode = NavigationMode.ThreeButton,
+        )
+    }
 }
 @Preview
 @Composable
@@ -118,10 +133,11 @@ private fun IconNavigateBack(
     iconSize: Dp,
     contentColor: Color
 ) {
+    val ltr = LocalLayoutDirection.current == LayoutDirection.Ltr
     Image(
         modifier = Modifier
             .size(iconSize)
-            .scale(-1f),
+            .scale(if (ltr) -1f else 1f),
         imageVector = Icons_Navigation_Back,
         contentDescription = "Back",
         colorFilter = ColorFilter.tint(contentColor)
