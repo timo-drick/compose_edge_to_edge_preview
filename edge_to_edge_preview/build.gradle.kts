@@ -50,7 +50,7 @@ android {
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     testOptions {
-        animationsDisabled = true
+        animationsDisabled = false
 
         unitTests {
             isIncludeAndroidResources = true
