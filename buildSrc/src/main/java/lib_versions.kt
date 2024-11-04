@@ -6,7 +6,7 @@ object Versions {
 
     const val androidPlugin = "8.7.0"
 
-    const val vanniktechPlugin = "0.28.0"
+    const val vanniktechPlugin = "0.30.0"
     const val spotless = "6.16.0"
 
     const val kotlin = "2.0.21"

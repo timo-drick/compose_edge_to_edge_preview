@@ -1,9 +1,13 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("plugin.compose")
-    id("maven-publish")
-    id("signing")
+    //id("maven-publish")
+    //id("signing")
+    id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
 }
 
 val mavenGroupId = Versions.mavenGroupId
@@ -47,14 +51,12 @@ android {
         baseline = file("lint-baseline.xml")
     }
 
-
-
-    publishing {
+    /*publishing {
         singleVariant("release") {
             withSourcesJar()
             withJavadocJar()
         }
-    }
+    }*/
 }
 
 dependencies {
@@ -68,8 +70,52 @@ dependencies {
     implementation("androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}")
     implementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
 }
+// https://vanniktech.github.io/gradle-maven-publish-plugin/central/
 
-publishing {
+mavenPublishing {
+    configure(
+        AndroidSingleVariantLibrary(
+            variant = "release",
+            sourcesJar = true,
+            publishJavadocJar = true
+        )
+    )
+    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
+    signAllPublications()
+
+    coordinates(mavenGroupId, mavenArtifactId, mavenVersion)
+
+    pom {
+        name.set("Compose edge to edge test library")
+        description.set(
+            """
+                    Collection of test functions for edge-to-edge designs.
+                    Testing if window insets overlap with content.
+                """.trimIndent()
+        )
+        url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
+        licenses {
+            license {
+                name = "The Unlicense"
+                url = "https://unlicense.org/"
+            }
+        }
+        developers {
+            developer {
+                id.set("timo-drick")
+                name.set("Timo Drick")
+                url.set("https://github.com/timo-drick")
+            }
+        }
+        scm {
+            url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
+            connection.set("scm:git:git://github.com/timo-drick/compose_edge_to_edge_preview.git")
+            developerConnection.set("scm:git:ssh://git@github.com/timo-drick/compose_edge_to_edge_preview.git")
+        }
+    }
+}
+
+/*publishing {
     publications {
         register<MavenPublication>("release") {
             groupId = mavenGroupId
@@ -131,3 +177,4 @@ signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
 }
+*/

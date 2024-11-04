@@ -1,17 +1,14 @@
-//import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-//import com.vanniktech.maven.publish.SonatypeHost
-import java.util.Properties
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("plugin.compose")
-    id("maven-publish")
-    id("signing")
+    //id("maven-publish")
+    //id("signing")
     id("com.autonomousapps.dependency-analysis")
-    //id("com.gradleup.nmcp").version("0.0.4")
-    //id("cl.franciscosolis.sonatype-central-upload") version "1.0.0"
-    //id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
+    id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
 }
 
 val mavenGroupId = Versions.mavenGroupId
@@ -50,13 +47,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
 dependencies {
@@ -89,7 +79,7 @@ dependencies {
 }
 
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
-/*
+
 mavenPublishing {
     configure(
         AndroidSingleVariantLibrary(
@@ -98,7 +88,7 @@ mavenPublishing {
             publishJavadocJar = true
         )
     )
-    publishToMavenCentral(SonatypeHost.S01)
+    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
     signAllPublications()
 
     coordinates(mavenGroupId, mavenArtifactId, mavenVersion)
@@ -129,20 +119,8 @@ mavenPublishing {
         }
     }
 }
-*/
 
-/*nmcp {
-    // nameOfYourPublication must point to an existing publication
-    publishAllPublications {
-        username = System.getenv("mavenCentralUsername") ?: System.getProperty("mavenCentralUsername")
-        password = System.getenv("mavenCentralPassword") ?: System.getProperty("mavenCentralPassword")
-
-        // publish manually from the portal
-        publicationType = "USER_MANAGED"
-
-    }
-}*/
-
+/*
 publishing {
     publications {
         register<MavenPublication>("release") {
@@ -204,3 +182,4 @@ signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
 }
+*/
