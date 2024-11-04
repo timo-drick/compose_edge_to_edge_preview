@@ -41,6 +41,7 @@ import kotlinx.serialization.encoding.Encoder
 data class InsetEntry(
     @WindowInsetsCompat.Type.InsetsType
     val type: Int,
+    val typeName: String,
     @Serializable(with = WindowInsetsSerializer::class)
     val insetIgnoringVisibility: WindowInsets,
     @Serializable(with = WindowInsetsSerializer::class)
@@ -114,11 +115,11 @@ data class RecordedInsets(
     val insetList: List<InsetEntry>
 )
 
-fun Context.navigationMode(): NavigationMode? {
-    return NavigationMode.entries.getOrNull(
-        Settings.Secure.getInt(contentResolver, "navigation_mode", -1)
-    )
-}
+fun Context.navigationMode(): NavigationMode =
+    if (Settings.Secure.getInt(contentResolver, "navigation_mode", -1) == 2)
+        NavigationMode.Gesture
+    else
+        NavigationMode.ThreeButton
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -130,48 +131,56 @@ fun recordInsets(
     val insetList = listOf(
         InsetEntry(
             type = WindowInsetsCompat.Type.statusBars(),
+            typeName = "statusBars",
             insetIgnoringVisibility = WindowInsets.statusBarsIgnoringVisibility,
             insetVisible = WindowInsets.statusBars,
             isVisible = WindowInsets.areStatusBarsVisible
         ),
         InsetEntry(
             type = WindowInsetsCompat.Type.navigationBars(),
+            typeName = "navigationBars",
             insetIgnoringVisibility = WindowInsets.navigationBarsIgnoringVisibility,
             insetVisible = WindowInsets.navigationBars,
             isVisible = WindowInsets.areNavigationBarsVisible
         ),
         InsetEntry(
             type = WindowInsetsCompat.Type.ime(),
+            typeName = "ime",
             insetIgnoringVisibility = WindowInsets.ime,
             insetVisible = WindowInsets.ime,
             isVisible = WindowInsets.isImeVisible
         ),
         InsetEntry(
             type = WindowInsetsCompat.Type.displayCutout(),
+            typeName = "displayCutout",
             insetIgnoringVisibility = WindowInsets.displayCutout,
             insetVisible = WindowInsets.displayCutout,
             isVisible = true
         ),
         InsetEntry(
             type = WindowInsetsCompat.Type.captionBar(),
+            typeName = "captionBar",
             insetIgnoringVisibility = WindowInsets.captionBarIgnoringVisibility,
             insetVisible = WindowInsets.captionBar,
             isVisible = WindowInsets.isCaptionBarVisible
         ),
         InsetEntry(
             type = WindowInsetsCompat.Type.mandatorySystemGestures(),
+            typeName = "mandatorySystemGestures",
             insetIgnoringVisibility = WindowInsets.mandatorySystemGestures,
             insetVisible = WindowInsets.mandatorySystemGestures,
             isVisible = true
         ),
         InsetEntry(
             type = WindowInsetsCompat.Type.systemGestures(),
+            typeName = "systemGestures",
             insetIgnoringVisibility = WindowInsets.systemGestures,
             insetVisible = WindowInsets.systemGestures,
             isVisible = true
         ),
         InsetEntry(
             type = WindowInsetsCompat.Type.tappableElement(),
+            typeName = "tappableElement",
             insetIgnoringVisibility = WindowInsets.tappableElementIgnoringVisibility,
             insetVisible = WindowInsets.tappableElement,
             isVisible = WindowInsets.isTappableElementVisible

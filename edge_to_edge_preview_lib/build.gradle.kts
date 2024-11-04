@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.compose")
     id("maven-publish")
     id("signing")
+    id("com.autonomousapps.dependency-analysis")
     //id("com.gradleup.nmcp").version("0.0.4")
     //id("cl.franciscosolis.sonatype-central-upload") version "1.0.0"
     //id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
@@ -60,7 +61,9 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:${Versions.coreKtx}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}")
+
+    api("androidx.core:core:${Versions.coreKtx}")
 
     lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}") // https://slackhq.github.io/compose-lints
 
@@ -68,24 +71,21 @@ dependencies {
     //implementation(composeBom)
     // Currently there are problems when using bom.
     // MavenCentral do not validate the lib in this case
+    api("androidx.compose.runtime:runtime:${Versions.composeVersion}")
 
     implementation("androidx.compose.ui:ui:${Versions.composeVersion}")
     implementation("androidx.compose.foundation:foundation:${Versions.composeVersion}")
+    implementation("androidx.compose.foundation:foundation-layout:${Versions.composeVersion}")
     implementation("androidx.compose.ui:ui-graphics:${Versions.composeVersion}")
+    implementation("androidx.compose.ui:ui-geometry:${Versions.composeVersion}")
+    implementation("androidx.compose.ui:ui-text:${Versions.composeVersion}")
+    implementation("androidx.compose.ui:ui-unit:${Versions.composeVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}")
 
     //implementation("androidx.compose.ui:ui-test:1.8.0-alpha04")
 
     debugImplementation("androidx.compose.ui:ui-tooling:${Versions.composeVersion}")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}")
-
-    //Testing
-    testImplementation("junit:junit:${Versions.junit}")
-    testImplementation("androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}")
-    androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
-    //androidTestImplementation(composeBom)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}")
+    debugRuntimeOnly("androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}")
 }
 
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/

@@ -7,6 +7,7 @@ plugins {
     id("com.android.compose.screenshot") version Versions.composeScreenshot apply false
     id("app.cash.paparazzi") version Versions.paparazzi apply false
     id("com.github.ben-manes.versions") version Versions.benManesPlugin
+    id("com.autonomousapps.dependency-analysis") version "2.3.0"
 }
 
 fun isStable(version: String): Boolean {

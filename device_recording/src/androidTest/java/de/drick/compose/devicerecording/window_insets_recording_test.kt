@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.io.PlatformTestStorageRegistry
@@ -29,11 +30,11 @@ import org.junit.runners.Parameterized.Parameters
 
 @RunWith(Parameterized::class)
 class RecordWindowInsets(
-    val rotation: TestRotation,
-    val navigationMode: NavigationMode,
+    private val rotation: TestRotation,
+    private val navigationMode: NavigationMode,
 ) {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<RecordActivity>()
+    val composeTestRule = createComposeRule()
 
     private val config = DeviceConfigurationUtils()
 
