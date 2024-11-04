@@ -29,6 +29,7 @@ interface DeviceConfigDSL {
      * So if you want to set the clock call: demoStatusBar("clock -e hhmm 1200")
      */
     fun demoStatusBar(command: String)
+    fun demoStatusBar()
 }
 
 
@@ -43,9 +44,7 @@ class DeviceConfigurationUtils {
         impl?.restore()
     }
 }
-/**
- *
- */
+
 /**
  * Sources:
  * https://medium.com/androiddevelopers/preview-and-test-your-apps-edge-to-edge-ui-da645c905d78
@@ -64,6 +63,7 @@ private class DeviceConfigurationImpl(
     private var animationsTurnedOff = false
     private var fontSizeChanged = false
     private var displaySizeChanged = false
+    private var demoModeEnabled = false
 
     private fun shellCmd(cmd: String) {
         uiAutomation.executeShellCommand(cmd)
@@ -73,11 +73,7 @@ private class DeviceConfigurationImpl(
             this@DeviceConfigurationImpl.shellCmd(cmd)
         }
         override fun turnScreenOn() {
-            val screenWasOn = device.isScreenOn
-            shellCmd("input keyevent KEYCODE_WAKEUP")
-            if (screenWasOn.not()) { // Longer sleep because screen was off
-                sleep(2000)
-            }
+            device.wakeUp()
         }
 
         override fun turnOffAnimations() {
@@ -96,17 +92,27 @@ private class DeviceConfigurationImpl(
             uiAutomation.setRotation(rotation.rotation)
         }
         override fun demoStatusBar(command: String) {
+            if (demoModeEnabled.not()) {
+                enableDemoMode()
+                demoModeEnabled = true
+            }
             sendDemoCommand(command)
+        }
+
+        override fun demoStatusBar() {
+            demoStatusBar("clock -e hhmm 1200")
+            demoStatusBar("battery -e level 69 -e plugged true -e powersave false")
+            demoStatusBar("network -e fully true")
+            demoStatusBar("network -e wifi show -e level 3 -e fully true")
+            demoStatusBar("network -e mobile show -e datatype 5g -e level 2 -e fully true")
+            demoStatusBar("notifications -e visible false")
+            demoStatusBar("status -e bluetooth connected -e alarm show -e mute show -e sync show")
         }
         override fun fontSize(size: Float) {
             fontSizeChanged = true
             setFontSize(size)
         }
 
-        /**
-         * Density change (Display size setting on device)
-         * https://cs.android.com/android-studio/platform/tools/adt/idea/+/mirror-goog-studio-main:streaming/src/com/android/tools/idea/streaming/uisettings/ui/GoogleDensityRange.kt
-         */
         override fun displaySize(size: Float) {
             displaySizeChanged = true
             setDisplaySize(size)
@@ -115,16 +121,18 @@ private class DeviceConfigurationImpl(
 
     fun prepare(block: DeviceConfigDSL.() -> Unit) {
         displayRotationBeforeTest = device.displayRotation
-        enableDemoMode()
         animationsTurnedOff = false
         fontSizeChanged = false
         displaySizeChanged = false
+        demoModeEnabled = false
         block(deviceConfigDSL)
         instrumentation.waitForIdleSync()
     }
 
     fun restore() {
-        sendDemoCommand("exit") //Exit demo mode
+        if (demoModeEnabled) {
+            sendDemoCommand("exit") //Exit demo mode
+        }
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         instrumentation.uiAutomation.setRotation(displayRotationBeforeTest)
         if (animationsTurnedOff) {
@@ -151,10 +159,10 @@ private class DeviceConfigurationImpl(
         shellCmd("settings put system font_scale $size")
     }
     private fun setDisplaySize(size: Float) {
-        // 2.625 * 160 -> 420
-        // 3.375 * 160 -> 540
-        //TODO get density and calculate correct size
-        shellCmd("wm density 540")
+        val ctx = instrumentation.targetContext
+        val density = ctx.resources.configuration.densityDpi
+        val newDensity = (density * size).toInt()
+        shellCmd("wm density $newDensity")
     }
     private fun enableDemoMode() {
         shellCmd("settings put global sysui_demo_allowed 1")
@@ -174,7 +182,6 @@ am broadcast -a com.android.systemui.demo -e command network -e wifi show -e lev
 am broadcast -a com.android.systemui.demo -e command network -e mobile show -e datatype 5g -e level 2 -e fully true
 am broadcast -a com.android.systemui.demo -e command notifications -e visible false
 am broadcast -a com.android.systemui.demo -e command status -e bluetooth connected -e alarm show -e mute show -e sync show
-
 """.trimIndent()
 
 enum class TestRotation(val rotation: Int) {
