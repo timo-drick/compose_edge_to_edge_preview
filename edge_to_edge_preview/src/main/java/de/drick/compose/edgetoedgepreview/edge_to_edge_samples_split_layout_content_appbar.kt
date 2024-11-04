@@ -24,8 +24,14 @@ import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.InsetMode
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 
-@Preview(name = "portrait", device = "spec:width=300dp,height=600dp,dpi=440")
-@Preview(name = "landscape", device = "spec:width=300dp,height=600dp,dpi=440,orientation=landscape")
+@Preview(
+    name = "portrait",
+    device = "spec:width=300dp,height=600dp,dpi=440"
+)
+@Preview(
+    name = "landscape",
+    device = "spec:width=300dp,height=600dp,dpi=440,orientation=landscape"
+)
 annotation class SampleBlogPreviews
 
 @SampleBlogPreviews
@@ -116,7 +122,7 @@ fun SamplePortraitContentAppBar(
         )
         TestComponentWindowInsets(
             modifier = Modifier.fillMaxWidth(),
-            innerModifier = Modifier.height(80.dp),
+            innerModifier = Modifier.height(70.dp),
             title = "Navigation Bar",
             windowInsets = WindowInsets.safeDrawing.only(
                 WindowInsetsSides.Horizontal +
@@ -136,10 +142,8 @@ fun SampleLandscapeContentAppBar(
             .fillMaxSize()
     ) {
         TestComponentWindowInsets(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(140.dp),
-            //innerModifier = Modifier.height(80.dp),
+            modifier = Modifier.fillMaxHeight(),
+            innerModifier = Modifier.width(70.dp),
             title = "Navigation Bar",
             windowInsets = WindowInsets.safeDrawing.only(
                 WindowInsetsSides.Start +

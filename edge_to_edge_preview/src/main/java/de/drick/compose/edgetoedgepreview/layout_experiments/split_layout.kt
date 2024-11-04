@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -43,9 +44,10 @@ private fun PreviewSplitLayoutLandscape() {
         navMode = NavigationMode.ThreeButton,
         cameraCutoutMode = CameraCutoutMode.Middle,
         showInsetsBorder = true,
+        isNavigationBarContrastEnforced = false
     ) {
-        //SplitLayoutSample()
-        SplitLayoutRowSample()
+        SplitLayoutSample()
+        //SplitLayoutRowSample()
     }
 }
 
@@ -81,23 +83,23 @@ fun SplitLayoutRowSample(
             .background(Color.LightGray)
             .fillMaxSize(),
         windowInsets = insets,
-        first = { innserModifier ->
+        first = { innerModifier ->
             TestComponentWindowInsets(
-                modifier = innserModifier
+                modifier = innerModifier
                     .width(120.dp)
                     .fillMaxHeight(),
                 title = "App Navigation Bar",
                 rotatedText = true
             )
         },
-        second = { innderModifier ->
+        second = { innerModifier ->
             val density = LocalDensity.current
             var insetsPadding by remember {
                 mutableStateOf(PaddingValues())
             }
             //val insetsPadding = WindowInsets.safeDrawing.asPaddingValues()
             TestComponentWindowInsets(
-                modifier = innderModifier
+                modifier = innerModifier
                     .onConsumedWindowInsetsChanged {
                         insetsPadding = insets
                             .exclude(it)

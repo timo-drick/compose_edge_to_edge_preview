@@ -1,10 +1,10 @@
 package de.drick.compose.edgetoedgepreview.layout_experiments
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -87,7 +87,7 @@ fun SmartInsetsConsumer(
     content: @Composable () -> Unit
 ) {
     val consumedWindowInsets = remember { MutableFixedPaddingValues() }
-    val ctx = LocalContext.current
+    val windowSize = currentWindowSize()
     Layout(
         modifier = modifier.consumeWindowInsets(consumedWindowInsets),
         content = content
@@ -99,7 +99,6 @@ fun SmartInsetsConsumer(
         val height = placeable?.height ?: 0
         layout(width, height) {
             coordinates?.positionInWindow()?.let { posInWindow ->
-                val windowSize = windowSize(ctx)
                 val leftConsumed = posInWindow.x.toInt()
                 val topConsumed = posInWindow.y.toInt()
                 val rightConsumed = windowSize.width - posInWindow.x.toInt() - width

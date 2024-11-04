@@ -18,7 +18,7 @@ import de.drick.compose.edgetoedgepreviewlib.CameraCutoutMode
 import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 import de.drick.compose.edgetoedgetestlib.SemanticsWindowInsetsAnchor
-import de.drick.compose.edgetoedgetestlib.assertAllWindowInsets
+import de.drick.compose.edgetoedgetestlib.assertWindowInsets
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -88,18 +88,18 @@ class EdgeToEdgeTestRobolectric(
         val base = "screenshot_${testQualifiers}_$testInvertedOrientation"
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-            .assertAllWindowInsets(
+            .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                baseName = base,
+                screenshotBaseName = base,
                 isRobolectricTest = true
             )
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-            .assertAllWindowInsets(
+            .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                baseName = "${base}_scrolled",
+                screenshotBaseName = "${base}_scrolled",
                 isRobolectricTest = true
             )
         /*composeTestRule

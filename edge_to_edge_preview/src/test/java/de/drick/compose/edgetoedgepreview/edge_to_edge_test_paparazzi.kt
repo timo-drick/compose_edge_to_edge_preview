@@ -1,6 +1,8 @@
 package de.drick.compose.edgetoedgepreview
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
@@ -24,16 +26,18 @@ class EdgeToEdgeTestPaparazzi {
     @Test
     fun testWindowInsets() {
         paparazzi.snapshot {
-            EdgeToEdgeTemplate(
-                modifier = Modifier
-                    .testTag("edge_to_edge"),
-                navMode = navigationMode,
-                cameraCutoutMode = CameraCutoutMode.End,
-                isInvertedOrientation = testInvertedOrientation == TestInvertedOrientation.INVERTED,
-            ) {
-                SemanticsWindowInsetsAnchor()
-                ComposeLibrariesTheme {
-                    InsetsTest()
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                EdgeToEdgeTemplate(
+                    modifier = Modifier
+                        .testTag("edge_to_edge"),
+                    navMode = navigationMode,
+                    cameraCutoutMode = CameraCutoutMode.End,
+                    isInvertedOrientation = testInvertedOrientation == TestInvertedOrientation.INVERTED,
+                ) {
+                    SemanticsWindowInsetsAnchor()
+                    ComposeLibrariesTheme {
+                        InsetsTest()
+                    }
                 }
             }
         }

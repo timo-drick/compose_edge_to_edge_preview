@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -74,10 +75,11 @@ fun BaseLayout(
     content: @Composable () -> Unit
 ) {
     EdgeToEdgeTemplate(
-        navMode = NavigationMode.ThreeButton,
+        navMode = NavigationMode.Gesture,
         cameraCutoutMode = CameraCutoutMode.Middle,
         showInsetsBorder = true,
-        useHiddenApiHack = false
+        useHiddenApiHack = false,
+        isNavigationBarContrastEnforced = false
     ) {
         Box(
             modifier
@@ -161,44 +163,46 @@ private fun TestLayoutListContentPaddingNaive() {
 }
 
 
-@GridScreenPreview
+@Preview
 @Composable
 private fun TestLayoutListContentPadding() {
-    BaseLayout {
-        Column(
-            modifier = Modifier
-                .background(color = Color.LightGray)
-            //.windowInsetsPadding(WindowInsets.safeDrawing)
-        ) {
-            val listContentPadding = WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Top)
-                .asPaddingValues()
-            ItemListContentPadding(
+    Box(Modifier.size(200.dp, 400.dp)) {
+        BaseLayout {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = listContentPadding
-            )
-            val navigationBarPadding = WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Bottom)
-                .asPaddingValues()
-            TestComponent(
-                modifier = Modifier
-                    .background(bgStripedRed)
-                    .height(navigationBarPadding.calculateTopPadding())
-                    .fillMaxWidth(),
-                title = "Navigation Bar top padding",
-                style = MaterialTheme.typography.headlineSmall
-            )
-            AppNavigationBar()
-            TestComponent(
-                modifier = Modifier
-                    .background(bgStripedGreen)
-                    .height(navigationBarPadding.calculateBottomPadding())
-                    .fillMaxWidth(),
-                title = "Navigation Bar bottom padding",
-                style = MaterialTheme.typography.headlineSmall
-            )
+                    .background(color = Color.LightGray)
+                //.windowInsetsPadding(WindowInsets.safeDrawing)
+            ) {
+                val listContentPadding = WindowInsets.safeDrawing
+                    .only(WindowInsetsSides.Top)
+                    .asPaddingValues()
+                ItemListContentPadding(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentPadding = listContentPadding
+                )
+                val navigationBarPadding = WindowInsets.safeDrawing
+                    .only(WindowInsetsSides.Bottom)
+                    .asPaddingValues()
+                TestComponent(
+                    modifier = Modifier
+                        .background(bgStripedRed)
+                        .height(navigationBarPadding.calculateTopPadding())
+                        .fillMaxWidth(),
+                    title = "Navigation Bar top padding",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                AppNavigationBar()
+                TestComponent(
+                    modifier = Modifier
+                        .background(bgStripedGreen)
+                        .height(navigationBarPadding.calculateBottomPadding())
+                        .fillMaxWidth(),
+                    title = "Navigation Bar bottom padding",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
         }
     }
 }

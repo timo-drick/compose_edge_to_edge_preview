@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -17,7 +18,7 @@ import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 import de.drick.compose.edgetoedgetestlib.DeviceConfigurationUtils
 import de.drick.compose.edgetoedgetestlib.SemanticsWindowInsetsAnchor
 import de.drick.compose.edgetoedgetestlib.TestRotation
-import de.drick.compose.edgetoedgetestlib.assertAllWindowInsets
+import de.drick.compose.edgetoedgetestlib.assertWindowInsets
 import de.drick.compose.edgetoedgetestlib.initializeActivity
 import org.junit.After
 import org.junit.Before
@@ -33,9 +34,12 @@ import org.junit.runners.Parameterized.Parameters
 class TestClass(
     rotation: TestRotation,
     navigationMode: NavigationMode
-): EdgeToEdgeTestNoActivity(rotation, navigationMode) {
+): EdgeToEdgeTestBase(rotation, navigationMode) {
 
     override val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val disableAnimationsRule = DisableAnimationsRule()
 
     @Test
     fun testWindowInsets() {
@@ -51,20 +55,40 @@ class TestClass(
                 InsetsTest()
             }
         }
-        //composeTestRule.waitForIdle()
-        /*composeTestRule
+        val visibleInsets = WindowInsetsCompat.Type.systemBars() or
+                WindowInsetsCompat.Type.displayCutout() or
+                WindowInsetsCompat.Type.ime()
+        val interactiveInsets = WindowInsetsCompat.Type.mandatorySystemGestures() or
+                WindowInsetsCompat.Type.systemGestures() or
+                WindowInsetsCompat.Type.tappableElement()
+        composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-            .assertAllWindowInsets(
-                insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                root = composeTestRule.onRoot()
-            )*/
+            .assertWindowInsets(
+                insetType = visibleInsets,
+                excludeVerticalScrollSides = true,
+                screenshotBaseName = "screenshot_text_${rotation}_${navigationMode}",
+            )
+        composeTestRule
+            .onAllNodes(hasClickAction())
+            .assertWindowInsets(
+                insetType = interactiveInsets,
+                excludeVerticalScrollSides = true,
+                screenshotBaseName = "screenshot_button_${rotation}_${navigationMode}",
+            )
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-            .assertAllWindowInsets(
-                baseName = "screenshot_$rotation",
-                insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            .assertWindowInsets(
+                insetType = visibleInsets,
+                screenshotBaseName = "screenshot_scrolled_${rotation}_${navigationMode}",
+            )
+        composeTestRule
+            .onAllNodes(hasClickAction())
+            .assertWindowInsets(
+                insetType = interactiveInsets,
+                excludeVerticalScrollSides = true,
+                screenshotBaseName = "screenshot_button_${rotation}_${navigationMode}",
             )
         val screenShotRaw = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
         screenShotRaw.writeToTestStorage("screenshot_${rotation}_${navigationMode}")
@@ -79,7 +103,7 @@ class TestClass(
     }
 }
 
-abstract class EdgeToEdgeTestNoActivity(
+abstract class EdgeToEdgeTestBase(
     val rotation: TestRotation,
     val navigationMode: NavigationMode,
 ) {
@@ -87,7 +111,7 @@ abstract class EdgeToEdgeTestNoActivity(
     @get:Rule
     abstract val composeTestRule: ComposeTestRule
 
-    val config = DeviceConfigurationUtils()
+    private val config = DeviceConfigurationUtils()
 
     companion object {
         @JvmStatic
@@ -106,6 +130,8 @@ abstract class EdgeToEdgeTestNoActivity(
             turnScreenOn()
             rotateScreen(rotation)
             setNavigationMode(navigationMode == NavigationMode.ThreeButton)
+            fontSize(1.5f)
+            displaySize(1.3f)
             sleep(500)
             demoStatusBar("clock -e hhmm 1200")
             demoStatusBar("battery -e level 69 -e plugged true -e powersave false")

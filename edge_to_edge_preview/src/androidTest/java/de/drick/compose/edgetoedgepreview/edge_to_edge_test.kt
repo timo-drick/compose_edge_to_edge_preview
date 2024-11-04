@@ -1,14 +1,15 @@
 package de.drick.compose.edgetoedgepreview
 
 import android.os.Build
-import androidx.compose.runtime.SideEffect
+import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.printToLog
@@ -18,8 +19,9 @@ import de.drick.compose.edgetoedgepreview.ui.theme.ComposeLibrariesTheme
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 import de.drick.compose.edgetoedgetestlib.SemanticsWindowInsetsAnchor
 import de.drick.compose.edgetoedgetestlib.TestRotation
-import de.drick.compose.edgetoedgetestlib.assertAllWindowInsets
+import de.drick.compose.edgetoedgetestlib.assertWindowInsets
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -28,13 +30,10 @@ import org.junit.runners.Parameterized
 class EdgeToEdgeTest(
     rotation: TestRotation,
     navigationMode: NavigationMode
-): EdgeToEdgeTestNoActivity(rotation, navigationMode) {
+): EdgeToEdgeTestBase(rotation, navigationMode) {
 
-    override val composeTestRule = createAndroidComposeRule<TestActivity>()
-
-    //@get:Rule val composeTestRule = createEmptyComposeRule()
-
-    //private lateinit var scenario: ActivityScenario<MainActivity>
+    @get:Rule
+    override val composeTestRule = createComposeRule()
 
     @Before
     fun setup() {
@@ -45,12 +44,12 @@ class EdgeToEdgeTest(
 
     @Test
     fun testWindowInsets() {
-        val activity = composeTestRule.activity
         composeTestRule.setContent {
             SemanticsWindowInsetsAnchor()
-            SideEffect {
+            (LocalContext.current as ComponentActivity).apply {
+                enableEdgeToEdge()
                 if (Build.VERSION.SDK_INT >= 29) {
-                    activity.window.isNavigationBarContrastEnforced = false
+                    window.isNavigationBarContrastEnforced = false
                 }
             }
             ComposeLibrariesTheme {
@@ -60,24 +59,22 @@ class EdgeToEdgeTest(
         composeTestRule.waitForIdle()
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-            .assertAllWindowInsets(
+            .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                baseName = "screenshot_$rotation"
+                screenshotBaseName = "screenshot_$rotation"
             )
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-            .assertAllWindowInsets(
+            .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                baseName = "screenshot_${rotation}_scrolled"
+                screenshotBaseName = "screenshot_${rotation}_scrolled"
             )
         /*composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertAll(SemanticsMatcher.windowInsets())
         */
-        val node = composeTestRule.onNodeWithTag("Test").fetchSemanticsNode()
-        node.parent
 
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("ROOT_NODE")
     }
