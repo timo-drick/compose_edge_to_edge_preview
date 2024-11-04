@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.semantics.ScrollAxisRange
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -60,16 +61,18 @@ private fun SemanticsNode.searchChildren(): TestWindowInsets? {
     return null //Anchor not found!
 }
 
-fun findTraversalGroupNode(node: SemanticsNode): SemanticsNode? {
-    val isTraversalGroup = node.config.getOrElse(SemanticsProperties.IsTraversalGroup, defaultValue = { false })
-    return if (isTraversalGroup) {
-        node
-    } else {
-        node.parent?.let {
-            findTraversalGroupNode(it)
-        }
+fun findVerticalScrollAxisRange(node: SemanticsNode): ScrollAxisRange? = node.config
+    .getOrNull(SemanticsProperties.VerticalScrollAxisRange)
+    ?: node.parent?.let {
+        findVerticalScrollAxisRange(it)
     }
-}
+
+fun findHorizontalScrollAxisRange(node: SemanticsNode): ScrollAxisRange? = node.config
+    .getOrNull(SemanticsProperties.HorizontalScrollAxisRange)
+    ?: node.parent?.let {
+        findVerticalScrollAxisRange(it)
+    }
+
 
 fun checkOverlap(
     @InsetsType type: Int,
@@ -131,56 +134,202 @@ private fun createOverlapScreenShot(
 
 fun SemanticsNodeInteraction.assertWindowInsets(
     @InsetsType insetType: Int,
+    /**
+     * In robolectric tests the window insets are not working with the view injection
+     * method. So here we use a hack to inject the window insets. Looks like it is working.
+     */
     isRobolectricTest: Boolean = false,
-    messagePrefixOnError: (() -> String)? = null
+    /**
+     * When a node is inside a vertical scrollable area only the horizontal sides are checked.
+     * But if the content is fully scrolled down the top side is also checked.
+     * And if the content is fully scrolled up the bottom side is also checked.
+     * Horizontal scroll areas not supported yet!
+     */
+    excludeVerticalScrollSides: Boolean = true,
+    /**
+     * Take a screenshot when there is an overlap. Currently this is only created in the outputs
+     * folder of the build directory. So i did not found a way to display it in the test report.
+     */
+    screenshotBaseName: String? = null,
 ): SemanticsNodeInteraction {
     val insetName = getNameFromWindowInsetType(insetType)
-    var errorMessageOnFail = "Failed to assertWindowInsets: [$insetName])"
-    if (messagePrefixOnError != null) {
-        errorMessageOnFail = messagePrefixOnError() + "\n" + errorMessageOnFail
-    }
-    val node = fetchSemanticsNode(errorMessageOnFail)
-    val recordedInsets = node.findWindowInsets()
-    checkNotNull(recordedInsets) { "SemanticsWindowInsetsAnchor not found in semantics hierarchy!" }
-    val instrumentation = InstrumentationRegistry.getInstrumentation()
+    val errorMessageOnFail = "Failed to assertWindowInsets: [$insetName])"
 
-    val overlapInsets = checkOverlap(insetType, recordedInsets, node.boundsInWindow)
-    if (overlapInsets.isNotEmpty()) {
-        val overlappingBounds = overlapInsets.flatMap {
-            it.insetVisible.toBounds(
-                windowSize = Size(recordedInsets.windowWidth.toFloat(), recordedInsets.windowHeight.toFloat()),
-                sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
+    val node = fetchSemanticsNode(errorMessageOnFail)
+    testWindowInsets(
+        nodes = listOf(node),
+        generalErrorMessage = {
+            buildGeneralErrorMessage(
+                "",
+                this,
+                node
             )
-        }
-        val fileName = "screenshot_overlap_${node.id}"
-        val screenShotRaw = instrumentation.uiAutomation.takeScreenshot()
-        createOverlapScreenShot(
-            fileName = fileName,
-            screenShotRaw = screenShotRaw,
-            insetBounds = overlappingBounds,
-            bounds = node.boundsInWindow,
-            isRobolectricTest = isRobolectricTest
-        )
-        val message = buildString {
-            append(buildGeneralErrorMessage(errorMessageOnFail, this@assertWindowInsets, node))
-            appendLine()
-            val overlappingInsetTypes = overlapInsets.joinToString { getNameFromWindowInsetType(it.type) }
-            appendLine("[$overlappingInsetTypes] overlap with node!")
-        }
-        throw AssertionError(message)
-    }
+        },
+        insetType = insetType,
+        isRobolectricTest = isRobolectricTest,
+        excludeVerticalScrollSides = excludeVerticalScrollSides,
+        screenshotBaseName = screenshotBaseName
+    )
+
     return this
 }
 
-fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
-    baseName: String = "screenshot",
+fun SemanticsNodeInteractionCollection.assertWindowInsets(
     @InsetsType insetType: Int,
+    /**
+     * In robolectric tests the window insets are not working with the view injection
+     * method. So here we use a hack to inject the window insets. Looks like it is working.
+     */
     isRobolectricTest: Boolean = false,
-): SemanticsNodeInteractionCollection {
+    /**
+     * When a node is inside a vertical scrollable area only the horizontal sides are checked.
+     * But if the content is fully scrolled down the top side is also checked.
+     * And if the content is fully scrolled up the bottom side is also checked.
+     * Horizontal scroll areas not supported yet!
+     */
+    excludeVerticalScrollSides: Boolean = true,
+    /**
+     * When there are no window insets at all. There will be
+     * an error message to turn on edge-to-edge design.
+     */
+    complainAboutNoWindowInsets: Boolean = true,
+    /**
+     * Take a screenshot when there is an overlap. Currently this is only created in the outputs
+     * folder of the build directory. So i did not found a way to display it in the test report.
+     */
+    screenshotBaseName: String? = null,
+    ): SemanticsNodeInteractionCollection {
     val insetName = getNameFromWindowInsetType(insetType)
-    val errorOnFail = "Failed to assertAllWindowInsets($insetName)"
+    val errorOnFail = "Failed to assertWindowInsets($insetName)"
     val nodes = fetchSemanticsNodes(errorMessageOnFail = errorOnFail)
-    val windowInsets = nodes.first().findWindowInsets()
+    testWindowInsets(
+        nodes = nodes,
+        generalErrorMessage = { node ->
+            buildGeneralErrorMessage(
+                "",
+                this,
+                node
+            )
+        },
+        insetType = insetType,
+        isRobolectricTest = isRobolectricTest,
+        excludeVerticalScrollSides = excludeVerticalScrollSides,
+        complainAboutNoWindowInsets = complainAboutNoWindowInsets,
+        screenshotBaseName = screenshotBaseName
+    )
+    return this
+}
+
+fun testWindowInsets(
+    nodes: List<SemanticsNode>,
+    generalErrorMessage: (SemanticsNode) -> String,
+    @InsetsType insetType: Int,
+    /**
+     * In robolectric tests the window insets are not working with the view injection
+     * method. So here we use a hack to inject the window insets. Looks like it is working.
+     */
+    isRobolectricTest: Boolean = false,
+    /**
+     * When a node is inside a vertical scrollable area only the horizontal sides are checked.
+     * But if the content is fully scrolled down the top side is also checked.
+     * And if the content is fully scrolled up the bottom side is also checked.
+     * Horizontal scroll areas not supported yet!
+     */
+    excludeVerticalScrollSides: Boolean = true,
+    /**
+     * When there are no window insets at all. There will be
+     * an error message to turn on edge-to-edge design.
+     */
+    complainAboutNoWindowInsets: Boolean = true,
+    /**
+     * Take a screenshot when there is an overlap. Currently this is only created in the outputs
+     * folder of the build directory. So i did not found a way to display it in the test report.
+     */
+    screenshotBaseName: String? = null,
+) {
+    val windowInsets = checkWindowInsetsAnchor(nodes.first())
+    if (complainAboutNoWindowInsets) {
+        check(windowInsets.isNotEmpty()) {
+            """
+        |Detected window insets are empty!
+        |Maybe you forgot to enable edge to edge?
+        |//TODO different example when in robolectric mode!
+        |Example:
+        |> composeTestRule.setContent {
+        |> --> (LocalContext.current as ComponentActivity).enableEdgeToEdge()  <--
+        |>     SemanticsWindowInsetsAnchor()
+        |>     AppTheme {
+        |>         ScreenToTest()
+        |>     }
+        |> }
+    """.trimMargin()
+        }
+    }
+    val instrumentation = InstrumentationRegistry.getInstrumentation()
+    val message = buildString {
+        nodes.forEach { node ->
+            var sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
+            var verticalScrollPosition: Float? = null
+            if (excludeVerticalScrollSides) {
+                //TODO add horizontal traversal group
+                findVerticalScrollAxisRange(node)?.let { verticalRange ->
+                    sides = WindowInsetsSides.Horizontal
+                    val vPos = verticalRange.value()
+                    verticalScrollPosition = vPos
+                    if (vPos <= 0f) sides += WindowInsetsSides.Top
+                    if (vPos >= verticalRange.maxValue())
+                        sides += WindowInsetsSides.Bottom
+                }
+            }
+            val overlapInsets = checkOverlap(insetType, windowInsets, node.boundsInWindow, sides)
+            if (overlapInsets.isNotEmpty()) {
+                val windowSize = Size(
+                    windowInsets.windowWidth.toFloat(),
+                    windowInsets.windowHeight.toFloat()
+                )
+                val overlappingBounds = overlapInsets
+                    .flatMap {
+                        it.insetVisible
+                            .toBounds(windowSize, sides)
+                            .filter { bounds -> bounds.overlaps(node.boundsInWindow) }
+                }
+                val fileName = screenshotBaseName?.let { "${it}_node_${node.id}" }
+                if (fileName != null) {
+                    //val screenShotRaw = root.captureToImage().asAndroidBitmap()
+                    val screenShotRaw = instrumentation.uiAutomation.takeScreenshot()
+                    createOverlapScreenShot(
+                        fileName = fileName,
+                        screenShotRaw = screenShotRaw,
+                        insetBounds = overlappingBounds,
+                        bounds = node.boundsInWindow,
+                        isRobolectricTest = isRobolectricTest
+                    )
+                }
+                append(generalErrorMessage(node))
+                appendLine()
+                val overlappingInsetTypes =
+                    overlapInsets.joinToString { getNameFromWindowInsetType(it.type) }
+                appendLine("[$overlappingInsetTypes] overlap with node!")
+                if (verticalScrollPosition != null) {
+                    appendLine("vertical scroll position: $verticalScrollPosition")
+                }
+                val device = "${Build.MODEL} - ${Build.VERSION.RELEASE}"
+                appendLine("Device: $device")
+                if (fileName != null) {
+                    val screenshotBaseFolder =
+                        "../../../outputs/connected_android_test_additional_output/debugAndroidTest/connected"
+                    val screenshotFile = "$screenshotBaseFolder/$device/$fileName.png"
+                    appendLine("""Screenshot: [$device] $fileName.png""")
+                }
+                appendLine()
+            }
+        }
+    }
+    if (message.isNotEmpty()) throw AssertionError(message)
+}
+
+private fun checkWindowInsetsAnchor(node: SemanticsNode): TestWindowInsets {
+    val windowInsets = node.findWindowInsets()
     checkNotNull(windowInsets) { """
         |SemanticsWindowInsetsAnchor not found in semantics hierarchy!
         |Please make sure you added SemanticsWindowInsetsAnchor in your composable.
@@ -194,84 +343,7 @@ fun SemanticsNodeInteractionCollection.assertAllWindowInsets(
         |> }
         """.trimMargin()
     }
-    check(windowInsets.isNotEmpty()) { """
-        |Detected window insets are empty!
-        |Maybe you forgot to enable edge to edge?
-        |//TODO different example when in robolectric mode!
-        |Example:
-        |> composeTestRule.setContent {
-        |> --> enableEdgeToEdge() <--
-        |>     SemanticsWindowInsetsAnchor()
-        |>     AppTheme {
-        |>         ComposableToTest()
-        |>     }
-        |> }
-    """.trimMargin()
-
-    }
-    val instrumentation = InstrumentationRegistry.getInstrumentation()
-    val message = buildString {
-        nodes.forEach { node ->
-            //Search for traversal true parent
-            val traversalGroupNode = findTraversalGroupNode(node)
-            var sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
-            var scrollPosition = 0f
-            //TODO add horizontal traversal group
-            traversalGroupNode?.let {
-                it.config.getOrNull(SemanticsProperties.VerticalScrollAxisRange)?.let { verticalRange ->
-                    //appendLine("Traversal node: ${traversalGroupNode.id} $verticalRange")
-                    sides = WindowInsetsSides.Horizontal
-                    val vPos = verticalRange.value()
-                    scrollPosition = vPos
-                    if (vPos <= 0f) sides += WindowInsetsSides.Top
-                    if (vPos >= verticalRange.maxValue())
-                        sides += WindowInsetsSides.Bottom
-                }
-            }
-            val overlapInsets = checkOverlap(insetType, windowInsets, node.boundsInWindow, sides)
-            if (overlapInsets.isNotEmpty()) {
-                val overlappingBounds = overlapInsets.flatMap {
-                    it.insetVisible.toBounds(
-                        Size(
-                            windowInsets.windowWidth.toFloat(),
-                            windowInsets.windowHeight.toFloat()
-                        ),
-                        sides
-                    )
-                }
-                val fileName = "${baseName}_node_${node.id}"
-                //val screenShotRaw = root.captureToImage().asAndroidBitmap()
-                val screenShotRaw = instrumentation.uiAutomation.takeScreenshot()
-                createOverlapScreenShot(
-                    fileName = fileName,
-                    screenShotRaw = screenShotRaw,
-                    insetBounds = overlappingBounds,
-                    bounds = node.boundsInWindow,
-                    isRobolectricTest = isRobolectricTest
-                )
-                append(
-                    buildGeneralErrorMessage(
-                        "",
-                        this@assertAllWindowInsets,
-                        node
-                    )
-                )
-                appendLine()
-                val overlappingInsetTypes =
-                    overlapInsets.joinToString { getNameFromWindowInsetType(it.type) }
-                appendLine("[$overlappingInsetTypes] overlap with node!")
-                appendLine("scroll position: $scrollPosition")
-                val device = "${Build.MODEL} - ${Build.VERSION.RELEASE}"
-                appendLine("Device: $device")
-                val screenshotBaseFolder = "../../../outputs/connected_android_test_additional_output/debugAndroidTest/connected"
-                val screenshotFile = "$screenshotBaseFolder/$device/$fileName.png"
-                appendLine("""Screenshot: [$device] $fileName.png""")
-                appendLine()
-            }
-        }
-    }
-    if (message.isNotEmpty()) throw AssertionError(message)
-    return this
+    return windowInsets
 }
 
 fun getNameFromWindowInsetType(
