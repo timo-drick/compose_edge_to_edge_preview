@@ -1,40 +1,28 @@
-# Jetpack Compose previews for edge-to-edge design
+# Jetpack Compose previews and testing for edge-to-edge design
 
-Library which enables you to show WindowInsets in Jetpack Compose previews. Supported insets are the status bar, navigation bar and a camera display cutout. It also is able to show many different configurations of the system bars.
+Library which enables you to show WindowInsets in Jetpack Compose previews.
 
-![multiple_preview_sample.png](docu%2Fmultiple_preview_sample.png)
+Supported insets are the status bar, navigation bar and a camera display cutout. It also is able to show many different configurations of the system bars.
 
-Add dependency:
+![multiple_preview_sample.png](docu/multiple_preview_sample.png)
 
-[![Maven Central](https://img.shields.io/maven-central/v/de.drick.compose/edge-to-edge-preview.svg)](https://mvnrepository.com/artifact/de.drick.compose/edge-to-edge-preview)
+# [Preview simulation library](edge_to_edge_preview_lib/README.md)
 
-```kotlin
-dependencies {
-    implementation("de.drick.compose:edge-to-edge-preview:<version>")
-}
-```
+Library that you can use to simulate window insets like the status bar or navigation bar and much more.
 
-Quickstart:
+Use cases:
+- Android Studio preview.
+- Screenshots
+- Testing with robolectric
 
-Just use the EdgeToEdgeTemplate composable around your content you want to preview. And it will simulate WindowInsets. You can specify different configurations.
+# [Overlap testing library](edge_to_edge_test_lib/README.md)
 
-```kotlin
-@Preview
-@Composable
-fun PreviewEdgeToEdge() {
-    EdgeToEdgeTemplate(
-        navMode = NavigationMode.ThreeButton,
-        cameraCutoutMode = CameraCutoutMode.Middle,
-        showInsetsBorder = true,
-        isStatusBarVisible = true,
-        isNavigationBarVisible = true,
-        isInvertedOrientation = false
-    ) {
-        //Your MainAppComposable()
-        //...
-    }
-}
-```
+Library which enables you to test for overlapping components.
+
+- Device/Emulator tests
+- Robolectric tests
+
+# [Recording insets from devices](device_recording/README.md)
 
 # Why is it good to have previews for WindowInsets?
 I wrote an article about this here:
