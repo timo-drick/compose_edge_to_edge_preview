@@ -89,7 +89,7 @@ Screenshot: [Pixel 7a - 15] screenshot_node_16.png
 
 If you provide a file name in the `screenshotBaseName` parameter of the assertWindowInsets function it will also create a screenshot with overlap markings. But it is not included in the test report. It is just collected in the `app/build/outputs/connected_android_test_additional_output` folder.
 
-![Sample overlapping problem](../docu/overlap_test_statusbar_overlap.webp)
+<img alt="Sample overlapping problem" src="../docu/overlap_test_statusbar_overlap.webp" width="25%"/>
 
 ## Robolectric
 
