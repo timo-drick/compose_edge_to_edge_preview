@@ -1,4 +1,4 @@
-rootProject.name = "Compose edge to edge preview library"
+rootProject.name = "Compose edge to edge library"
 
 pluginManagement {
     repositories {
@@ -21,3 +21,4 @@ include(":edge_to_edge_preview_lib")
 include(":edge_to_edge_test_lib")
 include(":edge_to_edge_preview")
 include(":device_recording")
+include(":edge_to_edge_preview_check_lib")

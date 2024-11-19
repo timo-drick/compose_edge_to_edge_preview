@@ -80,6 +80,7 @@ android {
 dependencies {
 
     implementation(project(":edge_to_edge_preview_lib"))
+    implementation(project(":edge_to_edge_preview_check_lib"))
 
     implementation("androidx.core:core-ktx:${Versions.coreKtx}")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
@@ -95,7 +96,6 @@ dependencies {
 
     lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
     debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}")
 
@@ -111,4 +111,5 @@ dependencies {
     androidTestImplementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest") // Needed for createComposeRule() injects the Activity
 }
