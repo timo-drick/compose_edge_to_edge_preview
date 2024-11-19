@@ -5,8 +5,6 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("plugin.compose")
-    //id("maven-publish")
-    //id("signing")
     id("com.autonomousapps.dependency-analysis")
     id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
 }
@@ -98,7 +96,7 @@ mavenPublishing {
         description.set("""
             Create previews for edge-to-edge designs (also known as WindowInsets) with Jetpack Compose in Android Studio.
         """.trimIndent())
-        url.set("https://github.com/timo-drick/compose_libraries")
+        url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
         licenses {
             license {
                 name = "The Unlicense"
@@ -113,73 +111,9 @@ mavenPublishing {
             }
         }
         scm {
-            url.set("https://github.com/timo-drick/compose_libraries")
-            connection.set("scm:git:git://github.com/timo-drick/compose_libraries.git")
-            developerConnection.set("scm:git:ssh://git@github.com/timo-drick/compose_libraries.git")
+            url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
+            connection.set("scm:git:git://github.com/timo-drick/compose_edge_to_edge_preview.git")
+            developerConnection.set("scm:git:ssh://git@github.com/timo-drick/compose_edge_to_edge_preview.git")
         }
     }
 }
-
-/*
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = mavenGroupId
-            artifactId = mavenArtifactId
-            version = mavenVersion
-
-            pom {
-                name.set("Compose edge to edge preview")
-                description.set("""
-                    Create previews for edge-to-edge designs (also known as WindowInsets) with Jetpack Compose in Android Studio.
-                """.trimIndent())
-                url.set("https://github.com/timo-drick/compose_libraries")
-                licenses {
-                    license {
-                        name = "The Unlicense"
-                        url = "https://unlicense.org/"
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("timo-drick")
-                        name.set("Timo Drick")
-                        url.set("https://github.com/timo-drick")
-                    }
-                }
-                scm {
-                    url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
-                    connection.set("scm:git:git://github.com/timo-drick/compose_edge_to_edge_preview.git")
-                    developerConnection.set("scm:git:ssh://git@github.com/timo-drick/compose_edge_to_edge_preview.git")
-                }
-            }
-
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "local"
-            setUrl("$rootDir/repo")
-        }
-        maven {
-            name = "OSSRH"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = System.getenv("OSSRH_USER")
-                password = System.getenv("OSSRH_PASSWORD")
-            }
-        }
-    }
-}
-
-signing {
-    val signingKey = System.getenv("SIGNING_KEY")
-    val signingPassword = System.getenv("SIGNING_PASSWORD")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
-}
-*/
