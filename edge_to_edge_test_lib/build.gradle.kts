@@ -17,7 +17,7 @@ val mavenVersion = Versions.mavenLib
 
 
 android {
-    namespace = "de.telekom.edgetoedgetestlib"
+    namespace = "de.drick.compose.edgetoedgetestlib"
     compileSdk = Versions.compileSdk
 
     defaultConfig {
