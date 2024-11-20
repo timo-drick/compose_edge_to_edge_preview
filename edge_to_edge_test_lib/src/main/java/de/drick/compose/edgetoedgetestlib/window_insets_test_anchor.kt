@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.tappableElement
 import androidx.compose.foundation.layout.tappableElementIgnoringVisibility
 import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.IntSize
 import androidx.core.view.WindowInsetsCompat
 
 
@@ -32,8 +33,7 @@ data class TestInsetEntry(
 )
 
 data class TestWindowInsets(
-    val windowWidth: Int,
-    val windowHeight: Int,
+    val windowSize: IntSize,
     val insetList: List<TestInsetEntry>
 )
 
@@ -93,8 +93,7 @@ fun getTestWindowInsets(): TestWindowInsets {
     )
     val size = currentWindowSize()
     return TestWindowInsets(
-        windowWidth = size.width,
-        windowHeight = size.height,
+        windowSize = size,
         insetList = insetList
     )
 }

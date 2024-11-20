@@ -2,7 +2,6 @@
 
 package de.drick.compose.edgetoedgetestlib
 
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.semantics.AccessibilityAction
 import androidx.compose.ui.semantics.SemanticsConfiguration
@@ -13,9 +12,6 @@ import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.test.SemanticsSelector
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.toSize
-
-fun WindowInsetsSides.intersect(side: WindowInsetsSides) =
-    this.value and side.value == side.value
 
 internal fun buildGeneralErrorMessage(
     errorMessage: String,

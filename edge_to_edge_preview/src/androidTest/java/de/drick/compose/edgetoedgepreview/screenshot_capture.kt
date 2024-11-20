@@ -17,14 +17,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
-import androidx.test.filters.SdkSuppress
 import androidx.test.platform.graphics.HardwareRendererCompat
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 
 @Composable
-@SdkSuppress(minSdkVersion = 26)
 fun captureScreenshot(): ImageBitmap {
     // TODO MultiWindowScreenshot
 
@@ -68,7 +66,6 @@ private fun Context.getActivityWindow(): Window {
     return getActivity().window
 }
 
-@SdkSuppress(minSdkVersion = 26)
 private fun Window.captureRegionToImage(
     boundsInWindow: Rect,
 ): ImageBitmap {
@@ -93,7 +90,6 @@ private fun <R> withDrawingEnabled(block: () -> R): R {
     }
 }
 
-@SdkSuppress(minSdkVersion = 26)
 private fun Window.generateBitmap(boundsInWindow: Rect): Bitmap {
     val destBitmap =
         Bitmap.createBitmap(
@@ -105,7 +101,6 @@ private fun Window.generateBitmap(boundsInWindow: Rect): Bitmap {
     return destBitmap
 }
 
-@SdkSuppress(minSdkVersion = 26)
 private object PixelCopyHelper {
     @DoNotInline
     fun request(
@@ -119,7 +114,6 @@ private object PixelCopyHelper {
     }
 }
 
-@SdkSuppress(minSdkVersion = 26)
 private fun Window.generateBitmapFromPixelCopy(boundsInWindow: Rect, destBitmap: Bitmap) {
     val latch = CountDownLatch(1)
     var copyResult = 0

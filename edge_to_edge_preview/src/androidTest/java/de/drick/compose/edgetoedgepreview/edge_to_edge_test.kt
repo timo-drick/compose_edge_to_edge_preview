@@ -20,6 +20,7 @@ import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 import de.drick.compose.edgetoedgetestlib.SemanticsWindowInsetsAnchor
 import de.drick.compose.edgetoedgetestlib.TestRotation
 import de.drick.compose.edgetoedgetestlib.assertWindowInsets
+import de.drick.compose.edgetoedgetestlib.createScreenshot
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -61,7 +62,13 @@ class EdgeToEdgeTest(
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                screenshotBaseName = "screenshot_$rotation"
+                onOverlap = { node, insetsRect ->
+                    createScreenshot(
+                        screenshotBaseName = "screenshot_$rotation",
+                        node = node,
+                        insetBounds = insetsRect
+                    )
+                }
             )
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
@@ -69,7 +76,13 @@ class EdgeToEdgeTest(
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                screenshotBaseName = "screenshot_${rotation}_scrolled"
+                onOverlap = { node, insetsRect ->
+                    createScreenshot(
+                        screenshotBaseName = "screenshot_${rotation}_scrolled",
+                        node = node,
+                        insetBounds = insetsRect
+                    )
+                }
             )
         /*composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))

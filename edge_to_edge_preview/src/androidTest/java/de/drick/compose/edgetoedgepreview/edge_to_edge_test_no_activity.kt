@@ -19,6 +19,7 @@ import de.drick.compose.edgetoedgetestlib.DeviceConfigurationUtils
 import de.drick.compose.edgetoedgetestlib.SemanticsWindowInsetsAnchor
 import de.drick.compose.edgetoedgetestlib.TestRotation
 import de.drick.compose.edgetoedgetestlib.assertWindowInsets
+import de.drick.compose.edgetoedgetestlib.createScreenshot
 import de.drick.compose.edgetoedgetestlib.initializeActivity
 import org.junit.After
 import org.junit.Before
@@ -66,14 +67,26 @@ class TestClass(
             .assertWindowInsets(
                 insetType = visibleInsets,
                 excludeVerticalScrollSides = true,
-                screenshotBaseName = "screenshot_text_${rotation}_${navigationMode}",
+                onOverlap = { node, insetsRect ->
+                    createScreenshot(
+                        screenshotBaseName = "screenshot_text_${rotation}_${navigationMode}",
+                        node = node,
+                        insetBounds = insetsRect
+                    )
+                },
             )
         composeTestRule
             .onAllNodes(hasClickAction())
             .assertWindowInsets(
                 insetType = interactiveInsets,
                 excludeVerticalScrollSides = true,
-                screenshotBaseName = "screenshot_button_${rotation}_${navigationMode}",
+                onOverlap = { node, insetsRect ->
+                    createScreenshot(
+                        screenshotBaseName = "screenshot_button_${rotation}_${navigationMode}",
+                        node = node,
+                        insetBounds = insetsRect
+                    )
+                }
             )
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
@@ -81,14 +94,25 @@ class TestClass(
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertWindowInsets(
                 insetType = visibleInsets,
-                screenshotBaseName = "screenshot_scrolled_${rotation}_${navigationMode}",
+                onOverlap = { node, insetsRect ->
+                    createScreenshot(
+                        screenshotBaseName = "screenshot_scrolled_${rotation}_${navigationMode}",    node = node,
+                        insetBounds = insetsRect
+                    )
+                }
             )
         composeTestRule
             .onAllNodes(hasClickAction())
             .assertWindowInsets(
                 insetType = interactiveInsets,
                 excludeVerticalScrollSides = true,
-                screenshotBaseName = "screenshot_button_${rotation}_${navigationMode}",
+                onOverlap = { node, insetsRect ->
+                    createScreenshot(
+                        screenshotBaseName = "screenshot_button_scrolled_${rotation}_${navigationMode}",
+                        node = node,
+                        insetBounds = insetsRect
+                    )
+                }
             )
         val screenShotRaw = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
         screenShotRaw.writeToTestStorage("screenshot_${rotation}_${navigationMode}")

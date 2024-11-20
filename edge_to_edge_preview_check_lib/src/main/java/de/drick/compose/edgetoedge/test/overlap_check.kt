@@ -16,37 +16,6 @@ enum class InsetSides {
     Left, Top, Right, Bottom
 }
 
-fun SemanticsNode.searchChildren(
-    matcher: SemanticsMatcher
-) = buildList {
-    Alignment.Top
-    searchChildren(this, matcher)
-}
-
-fun SemanticsNode.searchChildren(
-    list: MutableList<SemanticsNode>,
-    matcher: SemanticsMatcher
-) {
-    children.forEach { node ->
-        if (matcher.matches(node)) {
-            list.add(node)
-        }
-        node.searchChildren(list, matcher)
-    }
-}
-
-fun findVerticalScrollAxisRange(node: SemanticsNode): ScrollAxisRange? = node.config
-    .getOrNull(SemanticsProperties.VerticalScrollAxisRange)
-    ?: node.parent?.let {
-        findVerticalScrollAxisRange(it)
-    }
-
-fun findHorizontalScrollAxisRange(node: SemanticsNode): ScrollAxisRange? = node.config
-    .getOrNull(SemanticsProperties.HorizontalScrollAxisRange)
-    ?: node.parent?.let {
-        findHorizontalScrollAxisRange(it)
-    }
-
 fun checkOverlap(
     node: SemanticsNode,
     insets: WindowInsets,
@@ -81,6 +50,38 @@ fun checkOverlap(
         }
     }
 }
+
+fun SemanticsNode.searchChildren(
+    matcher: SemanticsMatcher
+) = buildList {
+    Alignment.Top
+    searchChildren(this, matcher)
+}
+
+fun SemanticsNode.searchChildren(
+    list: MutableList<SemanticsNode>,
+    matcher: SemanticsMatcher
+) {
+    children.forEach { node ->
+        if (matcher.matches(node)) {
+            list.add(node)
+        }
+        node.searchChildren(list, matcher)
+    }
+}
+
+fun findVerticalScrollAxisRange(node: SemanticsNode): ScrollAxisRange? = node.config
+    .getOrNull(SemanticsProperties.VerticalScrollAxisRange)
+    ?: node.parent?.let {
+        findVerticalScrollAxisRange(it)
+    }
+
+fun findHorizontalScrollAxisRange(node: SemanticsNode): ScrollAxisRange? = node.config
+    .getOrNull(SemanticsProperties.HorizontalScrollAxisRange)
+    ?: node.parent?.let {
+        findHorizontalScrollAxisRange(it)
+    }
+
 
 private val density = Density(1f)
 private val ld = LayoutDirection.Ltr
