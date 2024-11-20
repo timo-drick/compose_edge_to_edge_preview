@@ -17,7 +17,7 @@ Since "Android Studio Ladybug" previews of edge-to-edge design is possible.
     showSystemUi = true
 )
 ```
-![preview_check_sample_ladybug.png](../docu/preview_check_sample_ladybug.png)
+<img src="../docu/preview_check_sample_ladybug.png" alt="" style="height: 300px;" />
 
 To make the problems a little bit more obvious you can add this `TestWindowInsets` to your preview.
 
@@ -40,8 +40,7 @@ fun PlayerScreenPreview() {
     }
 }
 ```
-
-![preview_check_sample_ladybug_overlap.png](../docu/preview_check_sample_ladybug_overlap.png)
+<img src="../docu/preview_check_sample_ladybug_overlap.png" alt="" style="height: 300px;" />
 
 Unfortunately there is a not detected problem with the navigation bar. But it turned out that this is a bug in Android Studio. It does not provide insets information correctly for the system navigation bar when in landscape mode.
 
@@ -67,7 +66,6 @@ fun PlayerScreenPreview() {
     }
 }
 ```
-
-![preview_check_sample_overlap.png](../docu/preview_check_sample_overlap.png)
+<img src="../docu/preview_check_sample_overlap.png" alt="" style="height: 300px;" />
 
 So it is implemented correctly inside of the app. It just not handle the WindowInsets.displayCutout. 
