@@ -1,10 +1,10 @@
 object Versions {
-    const val mavenLib = "0.5.0"
+    const val mavenLib = "0.6.0"
     const val mavenGroupId = "de.drick.compose"
 
     const val benManesPlugin = "0.51.0" // Check for lib updates
 
-    const val androidPlugin = "8.7.0"
+    const val androidPlugin = "8.7.2"
 
     const val vanniktechPlugin = "0.30.0"
     const val spotless = "6.16.0"
@@ -17,10 +17,10 @@ object Versions {
     const val kotlinCoroutines = "1.9.0"
 
     const val coreKtx = "1.15.0"
-    const val lifecycle = "2.8.6"
+    const val lifecycle = "2.8.7"
 
-    const val composeLintChecks = "1.4.1"
-    const val activityCompose = "1.9.2"
+    const val composeLintChecks = "1.4.2"
+    const val activityCompose = "1.9.3"
     const val composeBom = "2024.09.03"
     const val composeAdaptive = "1.0.0"
     // Currently there are problems when using bom.
@@ -33,6 +33,6 @@ object Versions {
     const val uiAutomator = "2.4.0-alpha01"
     const val testRunner = "1.6.2"
     const val composeScreenshot = "0.0.1-alpha07"
-    const val robolectric = "4.13"
+    const val robolectric = "4.14"
     const val paparazzi = "1.3.4"
 }
