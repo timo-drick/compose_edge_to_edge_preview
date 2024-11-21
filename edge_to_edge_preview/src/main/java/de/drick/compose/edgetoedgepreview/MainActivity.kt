@@ -155,8 +155,13 @@ fun InsetsTest(modifier: Modifier = Modifier) {
                 Box(
                     modifier = Modifier
                         .onGloballyPositioned { }
-                        .offset(x = -animSize * detailVisible, y = -animSize * detailVisible)
-                        .align(Alignment.BottomEnd),
+                        .offset {
+                            val size = animSize.toPx()
+                            IntOffset(
+                                x = -(size * detailVisible).toInt(),
+                                y = -(size * detailVisible).toInt()
+                            )
+                        }.align(Alignment.BottomEnd),
                    // WindowInsets.safeDrawing
                 ) { //insetsPadding ->
                     Row(

@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -105,11 +105,13 @@ dependencies {
     //Testing
     testImplementation("junit:junit:${Versions.junit}")
     testImplementation("org.robolectric:robolectric:${Versions.robolectric}")
+    testImplementation(composeBom)
     testImplementation("androidx.compose.ui:ui-test-junit4")
     testImplementation("androidx.test:runner:${Versions.testRunner}")
-    androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Versions.espresso}")
+    androidTestImplementation(composeBom)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
+    //androidTestImplementation("androidx.test.services:storage:1.4.2") // Used to store bitmaps in TestStorage
+    //androidTestImplementation("androidx.test.services:test-services:1.4.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest") // Needed for createComposeRule() injects the Activity
 }
