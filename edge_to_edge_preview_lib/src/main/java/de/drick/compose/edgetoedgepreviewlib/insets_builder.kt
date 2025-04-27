@@ -1,11 +1,5 @@
 package de.drick.compose.edgetoedgepreviewlib
 
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.Insets
 import androidx.core.view.WindowInsetsCompat
 
@@ -66,39 +60,4 @@ fun buildInsets(block: InsetsDsl.() -> Unit): WindowInsetsCompat {
     }
     block(dsl)
     return dsl.builder.build()
-}
-
-@Composable
-fun ViewInsetInjector(
-    windowInsets: WindowInsetsCompat,
-    useHiddenApiHack: Boolean = false,
-    content: @Composable () -> Unit
-) {
-    /*DeviceConfigurationOverride(
-        override = DeviceConfigurationOverride.WindowInsets(windowInsets),
-        content = content
-    )*/
-    if (useHiddenApiHack) {
-        val windowInsetsState = rememberWindowInsetsState()
-        LaunchedEffect(Unit) {
-            windowInsetsState.update(windowInsets)
-        }
-        content()
-    } else {
-        AndroidView(
-            factory = { ctx ->
-                val view = ComposeView(ctx).apply {
-                    layoutParams = FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                    setOnApplyWindowInsetsListener { _, _ ->
-                        checkNotNull(windowInsets.toWindowInsets())
-                    }
-                    setContent(content)
-                }
-                view
-            }
-        )
-    }
 }
