@@ -2,8 +2,9 @@ package de.drick.compose.edgetoedgepreview
 
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.ui.platform.LocalContext
+
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
@@ -47,7 +48,7 @@ class EdgeToEdgeTest(
     fun testWindowInsets() {
         composeTestRule.setContent {
             SemanticsWindowInsetsAnchor()
-            (LocalContext.current as ComponentActivity).apply {
+            (LocalActivity.current as ComponentActivity).apply {
                 enableEdgeToEdge()
                 if (Build.VERSION.SDK_INT >= 29) {
                     window.isNavigationBarContrastEnforced = false
