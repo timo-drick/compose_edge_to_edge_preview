@@ -1,5 +1,11 @@
 package de.drick.compose.edgetoedgepreviewlib
 
+import android.view.WindowInsets
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.platform.AbstractComposeView
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.Insets
 import androidx.core.view.WindowInsetsCompat
 
@@ -61,3 +67,47 @@ fun buildInsets(block: InsetsDsl.() -> Unit): WindowInsetsCompat {
     block(dsl)
     return dsl.builder.build()
 }
+
+/**
+ * Copied and modified from the Android Jetpack Compose sources of the
+ * DeviceConfigurationOverride.WindowInsets. I just reimplemented it to avoid having to include
+ * the dependency of the androidx.compose.ui:ui-test library.
+ */
+@Composable
+fun WindowInsetsInjector(
+    windowInsets: WindowInsetsCompat,
+    content: @Composable () -> Unit
+) {
+    val currentContent by rememberUpdatedState(content)
+    val currentWindowInsets by rememberUpdatedState(windowInsets)
+    AndroidView(
+        factory = { context ->
+            object : AbstractComposeView(context) {
+                @Composable
+                override fun Content() {
+                    currentContent()
+                }
+
+                override fun dispatchApplyWindowInsets(insets: WindowInsets): WindowInsets {
+                    for (i in 0 until childCount) {
+                        getChildAt(i).dispatchApplyWindowInsets(
+                            WindowInsets(currentWindowInsets.toWindowInsets())
+                        )
+                    }
+                    return WindowInsetsCompat.CONSUMED.toWindowInsets()!!
+                }
+
+                /**
+                 * Deprecated, but intercept the `requestApplyInsets` call via the deprecated
+                 * method.
+                 */
+                @Deprecated("Deprecated in Java")
+                override fun requestFitSystemWindows() {
+                    dispatchApplyWindowInsets(WindowInsets(currentWindowInsets.toWindowInsets()!!))
+                }
+            }
+        },
+        update = { with(currentWindowInsets) { it.requestApplyInsets() } }
+    )
+}
+
