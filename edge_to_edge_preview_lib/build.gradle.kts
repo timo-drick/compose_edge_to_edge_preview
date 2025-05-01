@@ -70,8 +70,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-unit:${Versions.composeVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}")
 
-    implementation("androidx.compose.ui:ui-test:${Versions.composeVersion}")
-
     debugImplementation("androidx.compose.ui:ui-tooling:${Versions.composeVersion}")
     debugRuntimeOnly("androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}")
 }

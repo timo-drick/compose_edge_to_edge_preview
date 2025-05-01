@@ -21,8 +21,6 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.test.DeviceConfigurationOverride
-import androidx.compose.ui.test.WindowInsets
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -242,8 +240,8 @@ fun EdgeToEdgeTemplate(
             }
         }
     }
-    DeviceConfigurationOverride(
-        override = DeviceConfigurationOverride.WindowInsets(windowInsets),
+    WindowInsetsInjector(
+        windowInsets = windowInsets
     ) {
         Box(modifier.fillMaxSize()) {
             val cameraCutoutAlignment = when (cameraCutoutPos) {
