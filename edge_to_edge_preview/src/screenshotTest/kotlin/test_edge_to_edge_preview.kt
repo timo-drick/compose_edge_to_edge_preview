@@ -63,6 +63,18 @@ private fun PreviewEdgeToEdgePortrait3() {
     }
 }
 
+@TestPreviews
+@Composable
+private fun PreviewEdgeToEdgePortrait4() {
+    EdgeToEdgeTemplate(
+        navMode = NavigationMode.Hardware,
+        cameraCutoutMode = CameraCutoutMode.Middle,
+        showInsetsBorder = true,
+    ) {
+        PreviewContentAppBar()
+    }
+}
+
 @Composable
 private fun PreviewContentAppBar() {
     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {

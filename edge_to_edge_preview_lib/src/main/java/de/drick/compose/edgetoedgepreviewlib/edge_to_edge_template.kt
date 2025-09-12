@@ -39,7 +39,8 @@ class WindowInsetsPreviewProvider : PreviewParameterProvider<InsetsConfig> {
 
 enum class NavigationMode {
     ThreeButton,
-    Gesture
+    Gesture,
+    Hardware
 }
 
 enum class InsetMode {
@@ -175,7 +176,7 @@ fun EdgeToEdgeTemplate(
         }
         val navSize =
             if (cameraCutoutPos == InsetPos.BOTTOM && navigationPos == InsetPos.BOTTOM) navigationBarSize + cameraCutoutSize else navigationBarSize
-        if (cfg.navigationBarMode != InsetMode.Off) {
+        if (cfg.navigationBarMode != InsetMode.Off && cfg.navMode != NavigationMode.Hardware) {
             val navigationBarInsets = setInset(
                 pos = navigationPos,
                 type = WindowInsetsCompat.Type.navigationBars(),
@@ -238,6 +239,15 @@ fun EdgeToEdgeTemplate(
                     isVisible = true
                 )
             }
+
+            NavigationMode.Hardware -> setInset(
+                left = insets.left,
+                right = insets.right,
+                top = insets.top,
+                bottom = insets.bottom,
+                type = WindowInsetsCompat.Type.statusBars(),
+                isVisible = true
+            )
         }
     }
     WindowInsetsInjector(
@@ -303,7 +313,7 @@ fun EdgeToEdgeTemplate(
                 InsetPos.RIGHT -> AbsoluteAlignment.CenterRight
                 InsetPos.BOTTOM -> AbsoluteAlignment.BottomLeft
             }
-            if (cfg.navigationBarMode != InsetMode.Off) {
+            if (cfg.navigationBarMode != InsetMode.Off && cfg.navMode != NavigationMode.Hardware) {
                 NavigationBar(
                     size = navigationBarSizeDp,
                     modifier = Modifier
