@@ -2,12 +2,16 @@ plugins {
     id("com.android.application") version Versions.androidPlugin apply false
     id("com.android.library") version Versions.androidPlugin apply false
     kotlin("android") version Versions.kotlin apply false
+    kotlin("multiplatform") version Versions.kotlin apply false
     kotlin("plugin.compose") version Versions.kotlin apply false
     kotlin("plugin.serialization") version Versions.kotlin
+    id("org.jetbrains.compose") version Versions.composeMultiplatform apply false
     id("com.android.compose.screenshot") version Versions.composeScreenshot apply false
     id("app.cash.paparazzi") version Versions.paparazzi apply false
     id("com.github.ben-manes.versions") version Versions.benManesPlugin
     id("com.autonomousapps.dependency-analysis") version "2.3.0"
+    kotlin("multiplatform.library") version "8.13.0" apply false
+    id("com.android.lint") version "8.13.0" apply false
 }
 
 fun isStable(version: String): Boolean {

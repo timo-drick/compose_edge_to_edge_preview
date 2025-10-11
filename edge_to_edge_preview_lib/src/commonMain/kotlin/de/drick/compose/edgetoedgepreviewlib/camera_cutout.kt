@@ -1,6 +1,5 @@
 package de.drick.compose.edgetoedgepreviewlib
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,37 +13,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.local.compose.icons.Icons_Filled_Lens
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 enum class CameraCutoutMode {
     None, Middle, Start, End
 }
 
 @Preview(name = "Portrait")
-@Preview(name = "Landscape", device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
 private fun PreviewCameraCutoutVertical() {
-    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val cutoutSize = 80.dp
-    if (isLandscape) {
-        CameraCutout(
-            cutoutSize = cutoutSize,
-            cutoutMode = CameraCutoutMode.Middle,
-            isVertical = true
-        )
-    } else {
-        CameraCutout(
-            cutoutSize = cutoutSize,
-            cutoutMode = CameraCutoutMode.Middle,
-            isVertical = false
-        )
-    }
+    CameraCutout(
+        cutoutSize = cutoutSize,
+        cutoutMode = CameraCutoutMode.Middle,
+        isVertical = true
+    )
 }
-
+@Preview(name = "Portrait")
+@Composable
+private fun PreviewCameraCutoutVerticalHorizontal() {
+    val cutoutSize = 80.dp
+    CameraCutout(
+        cutoutSize = cutoutSize,
+        cutoutMode = CameraCutoutMode.Middle,
+        isVertical = false
+    )
+}
 @Composable
 fun CameraCutout(
     modifier: Modifier = Modifier,
