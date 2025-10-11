@@ -1,15 +1,15 @@
 object Versions {
-    const val mavenLib = "0.7.1"
+    const val mavenLib = "0.8.0-alpha4"
     const val mavenGroupId = "de.drick.compose"
 
     const val benManesPlugin = "0.51.0" // Check for lib updates
 
-    const val androidPlugin = "8.7.2"
+    const val androidPlugin = "8.13.0"
 
     const val vanniktechPlugin = "0.30.0"
     const val spotless = "6.16.0"
 
-    const val kotlin = "2.0.21"
+    const val kotlin = "2.2.20"
 
     const val compileSdk = 35
 
@@ -27,12 +27,14 @@ object Versions {
     // MavenCentral do not validate the lib in this case
     const val composeVersion = "1.8.0"
 
+    const val composeMultiplatform = "1.9.0"
+
     const val junit = "4.13.2"
     const val extJunit = "1.2.1"
     const val espresso = "3.6.1"
     const val uiAutomator = "2.4.0-alpha01"
     const val testRunner = "1.6.2"
-    const val composeScreenshot = "0.0.1-alpha07"
+    const val composeScreenshot = "0.0.1-alpha11"
     const val robolectric = "4.14.1"
     const val paparazzi = "1.3.4"
 }

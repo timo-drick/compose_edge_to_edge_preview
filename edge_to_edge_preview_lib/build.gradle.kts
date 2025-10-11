@@ -1,10 +1,13 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    kotlin("multiplatform")
     kotlin("plugin.compose")
+    id("org.jetbrains.compose")
+    id("com.android.library") version Versions.androidPlugin
     id("com.autonomousapps.dependency-analysis")
     id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
 }
@@ -14,74 +17,85 @@ val mavenArtifactId = "edge-to-edge-preview"
 
 val mavenVersion = Versions.mavenLib
 
-android {
-    namespace = "de.drick.compose.edgetoedgepreviewlib"
-    group = mavenGroupId
-    compileSdk = Versions.compileSdk
+kotlin {
 
-    defaultConfig {
-        minSdk = 21
+    applyDefaultHierarchyTemplate()
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+    jvm()
+
+    androidTarget("android")
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+        }
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+    @OptIn(ExperimentalWasmDsl::class) wasmJs() { browser() }
+
+    js { browser() }
+
+    macosX64()
+    macosArm64()
+
+    sourceSets {
+        commonMain.dependencies {
+            api(compose.runtime)
+            implementation(compose.ui)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+            implementation(compose.components.uiToolingPreview)
         }
+
+        // Android targets
+        androidMain.dependencies {
+            implementation(compose.uiTooling)
+            api("androidx.core:core:${Versions.coreKtx}")
+        }
+
+        // NonAndroid targets (JVM, JS, Native)
+        val nonAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+
+        jvmMain { dependsOn(nonAndroidMain) }
+        webMain { dependsOn(nonAndroidMain) }
+        nativeMain { dependsOn(nonAndroidMain) }
+    }
+}
+
+android {
+    namespace = "de.drick.compose.edgetoedgepreviewlib"
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+    compileSdk = Versions.compileSdk
+    defaultConfig {
+        minSdk = 21
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+        jvmToolchain(17)
     }
     buildFeatures {
         compose = true
     }
 }
 
-dependencies {
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}")
-
-    api("androidx.core:core:${Versions.coreKtx}")
-
-    lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}") // https://slackhq.github.io/compose-lints
-
-    //val composeBom = platform("androidx.compose:compose-bom:${Versions.composeBom}")
-    //implementation(composeBom)
-    // Currently there are problems when using bom.
-    // MavenCentral do not validate the lib in this case
-    api("androidx.compose.runtime:runtime:${Versions.composeVersion}")
-
-    implementation("androidx.compose.ui:ui:${Versions.composeVersion}")
-    implementation("androidx.compose.foundation:foundation:${Versions.composeVersion}")
-    implementation("androidx.compose.foundation:foundation-layout:${Versions.composeVersion}")
-    implementation("androidx.compose.ui:ui-graphics:${Versions.composeVersion}")
-    implementation("androidx.compose.ui:ui-geometry:${Versions.composeVersion}")
-    implementation("androidx.compose.ui:ui-text:${Versions.composeVersion}")
-    implementation("androidx.compose.ui:ui-unit:${Versions.composeVersion}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}")
-
-    debugImplementation("androidx.compose.ui:ui-tooling:${Versions.composeVersion}")
-    debugRuntimeOnly("androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}")
-}
-
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
 
 mavenPublishing {
     configure(
-        AndroidSingleVariantLibrary(
-            variant = "release",
+        KotlinMultiplatform(
             sourcesJar = true,
-            publishJavadocJar = true
+            androidVariantsToPublish = listOf("debug", "release")
         )
     )
     publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
