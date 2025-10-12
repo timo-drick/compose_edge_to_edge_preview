@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.api
 import org.gradle.kotlin.dsl.implementation
 import org.gradle.kotlin.dsl.project
 
@@ -26,11 +27,15 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.ui)
                 implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
                 implementation(compose.components.uiToolingPreview)
                 implementation(compose.uiTooling)
                 // Add KMP dependencies here
 
+                api("androidx.compose.ui:ui-test:${Versions.composeMultiplatform}")
+
                 implementation(project(":edge_to_edge_preview_lib"))
+                implementation(project(":edge_to_edge_preview_check_lib"))
             }
         }
     }

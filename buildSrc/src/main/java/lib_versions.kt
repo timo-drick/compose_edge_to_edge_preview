@@ -11,21 +11,20 @@ object Versions {
 
     const val kotlin = "2.2.20"
 
-    const val compileSdk = 35
+    const val compileSdk = 36
 
     const val kotlinSerialization = "1.8.1"
-    const val kotlinCoroutines = "1.9.0"
 
-    const val coreKtx = "1.16.0"
-    const val lifecycle = "2.8.7"
+    const val coreKtx = "1.17.0"
+    const val lifecycle = "2.9.4"
 
     const val composeLintChecks = "1.4.2"
-    const val activityCompose = "1.10.1"
+    const val activityCompose = "1.11.0"
     const val composeBom = "2025.04.01"
     const val composeAdaptive = "1.1.0"
     // Currently there are problems when using bom.
     // MavenCentral do not validate the lib in this case
-    const val composeVersion = "1.8.0"
+    const val composeVersion = "1.9.3"
 
     const val composeMultiplatform = "1.9.0"
 

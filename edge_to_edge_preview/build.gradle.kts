@@ -94,6 +94,8 @@ dependencies {
     implementation("androidx.compose.material3.adaptive:adaptive:${Versions.composeAdaptive}")
     implementation("androidx.compose.material:material-icons-extended")
 
+    api("androidx.compose.ui:ui-test:${Versions.composeVersion}")
+
     lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
