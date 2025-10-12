@@ -1,11 +1,9 @@
 package de.drick.compose.edgetoedgepreviewchecklib
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +20,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.SemanticsOwner
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.unit.toSize
@@ -37,7 +35,6 @@ private data class OverlapCheckData(
     val excludeHorizontalScrollSides: Boolean,
 )
 
-@SuppressLint("ComposeModifierMissing")
 @Composable
 fun TestWindowInsets(
     overlapDsl: @Composable CheckOverlapDsl.() -> Unit
@@ -65,7 +62,7 @@ fun TestWindowInsets(
         overlapDsl(dsl)
     }
     var globalPos: LayoutCoordinates? by remember { mutableStateOf(null) }
-    val windowSizeInt = currentWindowSize()
+    val windowSizeInt = LocalWindowInfo.current.containerSize
     Spacer(Modifier.safeDrawingPadding().fillMaxSize().onGloballyPositioned {
         globalPos = it
     }.zIndex(1000f).drawWithCache {
@@ -110,15 +107,8 @@ fun ContentDrawScope.drawBox(
     )
 }
 
-@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 @Composable
-fun rememberSemanticsOwner(): SemanticsOwner? {
-    val view = LocalView.current
-    return remember {
-        (view as? androidx.compose.ui.platform.AndroidComposeView)
-            ?.semanticsOwner
-    }
-}
+expect fun rememberSemanticsOwner(): SemanticsOwner?
 
 interface CheckOverlapDsl {
     fun onAllNodes(matcher: SemanticsMatcher): NodeInteractionDsl

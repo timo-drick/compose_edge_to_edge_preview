@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.Insets
-import androidx.core.view.WindowInsetsCompat
 
 @Composable
 actual fun EdgeToEdgeTemplate(
@@ -78,7 +77,7 @@ fun EdgeToEdgeTemplateImpl(
         if (cfg.statusBarMode != InsetMode.Off) {
             val statusBarInsets = setInset(
                 top = statusBarHeight,
-                type = WindowInsetsCompat.Type.statusBars(),
+                type = InsetType.STATUS_BARS,
                 isVisible = cfg.statusBarMode == InsetMode.Visible
             )
             insets = insets.union(statusBarInsets)
@@ -88,7 +87,7 @@ fun EdgeToEdgeTemplateImpl(
         if (cfg.navigationBarMode != InsetMode.Off) {
             val navigationBarInsets = setInset(
                 pos = navigationPos,
-                type = WindowInsetsCompat.Type.navigationBars(),
+                type = InsetType.NAVIGATION_BARS,
                 size = navSize,
                 isVisible = cfg.navigationBarMode == InsetMode.Visible
             )
@@ -97,7 +96,7 @@ fun EdgeToEdgeTemplateImpl(
         if (cfg.cameraCutoutMode != CameraCutoutMode.None) {
             val cameraCutoutInsets = setInset(
                 pos = cameraCutoutPos,
-                type = WindowInsetsCompat.Type.displayCutout(),
+                type = InsetType.DISPLAY_CUTOUT,
                 size = cameraCutoutSize,
                 isVisible = true
             )
@@ -106,7 +105,7 @@ fun EdgeToEdgeTemplateImpl(
         if (cfg.captionBarMode != InsetMode.Off) {
             val captionBarInsets = setInset(
                 pos = InsetPos.TOP,
-                type = WindowInsetsCompat.Type.captionBar(),
+                type = InsetType.CAPTION_BAR,
                 size = captionBarSize,
                 isVisible = true
             )
@@ -117,7 +116,7 @@ fun EdgeToEdgeTemplateImpl(
             top = insets.top,
             right = insets.right,
             bottom = insets.bottom,
-            type = WindowInsetsCompat.Type.tappableElement(),
+            type = InsetType.TAPPABLE_ELEMENT,
             isVisible = true
         )
         setInset(
@@ -125,7 +124,7 @@ fun EdgeToEdgeTemplateImpl(
             top = insets.top,
             right = insets.right,
             bottom = insets.bottom,
-            type = WindowInsetsCompat.Type.mandatorySystemGestures(),
+            type = InsetType.MANDATORY_SYSTEM_GESTURES,
             isVisible = true
         )
         when (cfg.navMode) {
@@ -133,7 +132,7 @@ fun EdgeToEdgeTemplateImpl(
                 setInset(
                     top = statusBarHeight, //TODO maybe also consider display cutout
                     bottom = if (navigationPos == InsetPos.BOTTOM) navSize else 0,
-                    type = WindowInsetsCompat.Type.systemGestures(),
+                    type = InsetType.SYSTEM_GESTURES,
                     isVisible = true
                 )
             }
@@ -144,7 +143,7 @@ fun EdgeToEdgeTemplateImpl(
                     right = systemGestureHorizontalSize + insets.right,
                     top = insets.top,
                     bottom = insets.bottom,
-                    type = WindowInsetsCompat.Type.systemGestures(),
+                    type = InsetType.SYSTEM_GESTURES,
                     isVisible = true
                 )
             }

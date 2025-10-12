@@ -1,4 +1,4 @@
-package de.drick.compose.edgetoedgepreview
+package de.drick.compose.multiplatform_preview_test
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.tooling.preview.Preview
 import de.drick.compose.edgetoedgepreviewchecklib.TestWindowInsets
 import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Preview(widthDp = 411, heightDp = 891)

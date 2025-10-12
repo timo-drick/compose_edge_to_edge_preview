@@ -7,7 +7,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.compose")
     id("org.jetbrains.compose")
-    id("com.android.library") version Versions.androidPlugin
+    id("com.android.library")
     id("com.autonomousapps.dependency-analysis")
     id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
 }
@@ -95,7 +95,7 @@ mavenPublishing {
     configure(
         KotlinMultiplatform(
             sourcesJar = true,
-            androidVariantsToPublish = listOf("debug", "release")
+            androidVariantsToPublish = listOf("release")
         )
     )
     publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
