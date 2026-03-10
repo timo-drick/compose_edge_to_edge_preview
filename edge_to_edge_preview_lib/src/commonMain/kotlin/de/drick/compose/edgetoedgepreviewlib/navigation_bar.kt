@@ -20,13 +20,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.local.compose.icons.Icons_Filled_Circle
 import androidx.local.compose.icons.Icons_Filled_Rectangle
 import androidx.local.compose.icons.Icons_Navigation_Back
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Preview(name = "Navigation bar", widthDp = 400)
 @Composable

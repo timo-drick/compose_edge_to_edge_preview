@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.local.compose.icons.Icons_Filled_Wifi
 import androidx.local.compose.icons.Icons_Filled_BatteryChargingFull
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Preview(name = "Status bar")
 @Composable

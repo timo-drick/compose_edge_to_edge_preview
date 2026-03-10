@@ -1,5 +1,8 @@
 package de.drick.compose.edgetoedgepreviewlib
 
+import android.os.Build
+import android.view.WindowInsets
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -13,9 +16,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowInsetsCompat
 
+@RequiresApi(30)
 @Composable
 fun HighlightInsets(
-    windowInsets: WindowInsetsCompat,
+    windowInsets: WindowInsets,
     modifier: Modifier = Modifier,
     fill: Boolean = false
 ) {
@@ -55,23 +59,23 @@ fun HighlightInsets(
 private val mockInsetsPixel7aGesture = buildInsets {
     setInset(
         top = 118,
-        type = WindowInsetsCompat.Type.statusBars(),
+        type = InsetType.STATUS_BARS,
         isVisible = true
     )
     setInset(
         bottom = 63,
-        type = WindowInsetsCompat.Type.navigationBars(),
+        type = InsetType.NAVIGATION_BARS,
         isVisible = true
     )
     setInset(
         top = 118,
-        type = WindowInsetsCompat.Type.displayCutout(),
+        type = InsetType.DISPLAY_CUTOUT,
         isVisible = true
     )
     setInset(
         top = 150,
         bottom = 84,
-        type = WindowInsetsCompat.Type.mandatorySystemGestures(),
+        type = InsetType.MANDATORY_SYSTEM_GESTURES,
         isVisible = true
     )
     setInset(
@@ -79,16 +83,17 @@ private val mockInsetsPixel7aGesture = buildInsets {
         top = 150,
         right = 78,
         bottom = 84,
-        type = WindowInsetsCompat.Type.systemGestures(),
+        type = InsetType.SYSTEM_GESTURES,
         isVisible = true
     )
     setInset(
         top = 118,
-        type = WindowInsetsCompat.Type.tappableElement(),
+        type = InsetType.TAPPABLE_ELEMENT,
         isVisible = true
     )
 
 }
+@RequiresApi(Build.VERSION_CODES.R)
 @Preview
 @Composable
 private fun PreviewHighlightInsets() {

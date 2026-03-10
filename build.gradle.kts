@@ -1,29 +1,27 @@
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
+import nl.littlerobots.vcu.plugin.versionCatalogUpdate
+
 plugins {
-    kotlin("android") version Versions.kotlin apply false
-    kotlin("multiplatform") version Versions.kotlin apply false
-    kotlin("plugin.compose") version Versions.kotlin apply false
+    alias(libs.plugins.composeMultiplatform) apply false
+    alias(libs.plugins.composeCompiler) apply false
+    alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.androidMultiplatformLibrary) apply false
+    alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.versionCatalogUpdate) // Check for dependency updates
+    alias(libs.plugins.autonomousappsDependencyAnalysis)
+
     kotlin("plugin.serialization") version Versions.kotlin
-    id("org.jetbrains.compose") version Versions.composeMultiplatform apply false
-    id("com.android.application") version Versions.androidPlugin apply false
-    id("com.android.library") version Versions.androidPlugin apply false
-    id("com.android.compose.screenshot") version Versions.composeScreenshot apply false
     id("app.cash.paparazzi") version Versions.paparazzi apply false
-    id("com.github.ben-manes.versions") version Versions.benManesPlugin
-    id("com.autonomousapps.dependency-analysis") version "2.3.0"
-    id("com.android.kotlin.multiplatform.library") version "8.13.0" apply false
-    id("com.android.lint") version "8.13.0" apply false
+    id("com.android.lint") version "9.1.0" apply false
 }
 
-fun isStable(version: String): Boolean {
-    val unStableKeyword = listOf("alpha", "beta", "rc", "cr", "m", "preview", "dev").any { version.contains(it, ignoreCase = true) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    return unStableKeyword.not() || regex.matches(version)
-}
-
-fun isNonStable(version: String) = isStable(version).not()
-
-tasks.named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class.java).configure {
-    rejectVersionIf {
-        (isNonStable(candidate.version) && isStable(currentVersion))
+versionCatalogUpdate {
+    sortByKey.set(true)
+    versionSelector(VersionSelectors.PREFER_STABLE)
+    keep {
+        // Because of a bug of the version catalog it does not detect that the following variables are used
+        versions.add("compileSdk")
+        versions.add("targetSdk")
+        versions.add("minSdk")
     }
 }
