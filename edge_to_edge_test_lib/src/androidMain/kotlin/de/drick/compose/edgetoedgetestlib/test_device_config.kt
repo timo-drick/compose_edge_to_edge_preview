@@ -2,6 +2,9 @@ package de.drick.compose.edgetoedgetestlib
 
 import android.app.Instrumentation
 import android.app.UiAutomation
+import android.content.Context
+import android.content.res.Configuration
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,6 +24,7 @@ interface DeviceConfigDSL {
     fun rotateScreen(rotation: TestRotation)
     fun fontSize(size: Float)
     fun displaySize(size: Float)
+    fun setDarkMode(isDarkMode: Boolean)
     /**
      * possible commands are documented here:
      * https://android.googlesource.com/platform/frameworks/base/+/master/packages/SystemUI/docs/demo_mode.md
@@ -58,12 +62,15 @@ private class DeviceConfigurationImpl(
 ) {
     private val uiAutomation = instrumentation.uiAutomation
     private val device = UiDevice.getInstance(instrumentation)
+    private val ctx = instrumentation.context
 
     private var displayRotationBeforeTest = 0
     private var animationsTurnedOff = false
-    private var fontSizeChanged = false
+    private var fontSize: Float? = null
     private var displaySizeChanged = false
     private var demoModeEnabled = false
+    private var darkMode: Boolean? = null
+    private var isThreeButtonNavMode: Boolean? = null
 
     private fun shellCmd(cmd: String) {
         uiAutomation.executeShellCommand(cmd)
@@ -85,8 +92,8 @@ private class DeviceConfigurationImpl(
             Thread.sleep(millis)
         }
         override fun setNavigationMode(isThreeButton: Boolean) {
-            val modeName = if (isThreeButton) "threebutton" else "gestural"
-            shellCmd("cmd overlay enable-exclusive com.android.internal.systemui.navbar.$modeName")
+            isThreeButtonNavMode = ctx.navigationMode() == "ThreeButton"
+            setNavMode(isThreeButton)
         }
         override fun rotateScreen(rotation: TestRotation) {
             uiAutomation.setRotation(rotation.rotation)
@@ -109,7 +116,7 @@ private class DeviceConfigurationImpl(
             demoStatusBar("status -e bluetooth connected -e alarm show -e mute show -e sync show")
         }
         override fun fontSize(size: Float) {
-            fontSizeChanged = true
+            fontSize = ctx.resources.configuration.fontScale
             setFontSize(size)
         }
 
@@ -117,14 +124,21 @@ private class DeviceConfigurationImpl(
             displaySizeChanged = true
             setDisplaySize(size)
         }
+
+        override fun setDarkMode(isDarkMode: Boolean) {
+            darkMode = ctx.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+            println("before isDarkMode: $darkMode")
+            setDarkModeImpl(isDarkMode)
+        }
     }
 
     fun prepare(block: DeviceConfigDSL.() -> Unit) {
         displayRotationBeforeTest = device.displayRotation
         animationsTurnedOff = false
-        fontSizeChanged = false
+        fontSize = null
         displaySizeChanged = false
         demoModeEnabled = false
+        darkMode = null
         block(deviceConfigDSL)
         instrumentation.waitForIdleSync()
     }
@@ -138,11 +152,17 @@ private class DeviceConfigurationImpl(
         if (animationsTurnedOff) {
             setAnimations(true)
         }
-        if (fontSizeChanged) {
-            setFontSize(1f)
+        fontSize?.let {
+            setFontSize(it)
         }
         if (displaySizeChanged) {
             shellCmd("wm density reset")
+        }
+        darkMode?.let {
+            setDarkModeImpl(it)
+        }
+        isThreeButtonNavMode?.let {
+            setNavMode(it)
         }
     }
 
@@ -166,6 +186,14 @@ private class DeviceConfigurationImpl(
     }
     private fun enableDemoMode() {
         shellCmd("settings put global sysui_demo_allowed 1")
+    }
+    private fun setDarkModeImpl(isDarkMode: Boolean) {
+        val modeName = if (isDarkMode) "yes" else "no"
+        shellCmd("cmd uimode night $modeName")
+    }
+    private fun setNavMode(isThreeButton: Boolean) {
+        val modeName = if (isThreeButton) "threebutton" else "gestural"
+        shellCmd("cmd overlay enable-exclusive com.android.internal.systemui.navbar.$modeName")
     }
 }
 
@@ -202,3 +230,9 @@ fun initializeActivity(
         }
     }
 }
+
+fun Context.navigationMode(): String =
+    if (Settings.Secure.getInt(contentResolver, "navigation_mode", -1) == 2)
+        "Gesture"
+    else
+        "ThreeButton"

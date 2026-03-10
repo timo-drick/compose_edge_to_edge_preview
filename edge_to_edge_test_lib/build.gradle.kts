@@ -1,11 +1,12 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
-    id("com.android.library")
-    kotlin("android")
-    kotlin("plugin.compose")
-    id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.vanniktechMavenPublish)
 }
 
 val mavenGroupId = Versions.mavenGroupId
@@ -13,69 +14,45 @@ val mavenArtifactId = "edge-to-edge-test"
 
 val mavenVersion = Versions.mavenLib
 
-
-android {
-    namespace = "de.drick.compose.edgetoedgetestlib"
-    compileSdk = Versions.compileSdk
-
-    defaultConfig {
-        minSdk = 21
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+kotlin {
+    android {
+        namespace = "de.drick.compose.edgetoedgetestlib"
+        compileSdk = Versions.compileSdk
+        minSdk = 23
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+
+        }
+        androidMain.dependencies {
+            implementation(project(":edge_to_edge_preview_check_lib"))
+
+            implementation(libs.androidx.coreKtx)
+            implementation(libs.androidx.uiautomator)
+            implementation(libs.androidx.composeUiTest)
+            //lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}") // https://slackhq.github.io/compose-lints
+
+            //val composeBom = platform("androidx.compose:compose-bom:${Versions.composeBom}")
+            //implementation(composeBom)
+            //implementation("androidx.compose.material3.adaptive:adaptive")
         }
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    buildFeatures {
-        compose = true
-    }
-
-    lint {
-        baseline = file("lint-baseline.xml")
-    }
-}
-
-dependencies {
-
-    implementation(project(":edge_to_edge_preview_check_lib"))
-
-    implementation("androidx.core:core-ktx:${Versions.coreKtx}")
-
-    lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}") // https://slackhq.github.io/compose-lints
-
-    implementation("androidx.compose.material3.adaptive:adaptive:${Versions.composeAdaptive}")
-    implementation("androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}")
-    implementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
 }
 
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
 mavenPublishing {
     configure(
-        AndroidSingleVariantLibrary(
-            variant = "release",
-            sourcesJar = true,
-            publishJavadocJar = true
+        KotlinMultiplatform(
+            sourcesJar = SourcesJar.Sources(),
+            androidVariantsToPublish = listOf("release")
         )
     )
-    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
+    publishToMavenCentral(automaticRelease = true)
     signAllPublications()
 
     coordinates(mavenGroupId, mavenArtifactId, mavenVersion)
