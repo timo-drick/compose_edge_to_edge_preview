@@ -13,10 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.local.compose.icons.Icons_Filled_Lens
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 enum class CameraCutoutMode {
     None, Middle, Start, End

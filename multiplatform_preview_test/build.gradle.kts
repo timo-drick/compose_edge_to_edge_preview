@@ -1,19 +1,18 @@
-import org.gradle.kotlin.dsl.api
-import org.gradle.kotlin.dsl.implementation
-import org.gradle.kotlin.dsl.project
-
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.compose")
-    id("org.jetbrains.compose")
-    id("com.android.application") version Versions.androidPlugin
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.androidMultiplatformLibrary)
 }
 
 kotlin {
 
-    jvm("desktop")
+    jvm()
 
-    androidTarget("android")
+    android {
+        namespace = "de.drick.compose.multiplatform_preview_test"
+        compileSdk = Versions.compileSdk
+    }
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
@@ -23,13 +22,12 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.ui)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.components.uiToolingPreview)
-                implementation(compose.uiTooling)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.materialIconsExtended)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.uiToolingPreview)
                 // Add KMP dependencies here
 
                 api("androidx.compose.ui:ui-test:${Versions.composeMultiplatform}")
@@ -38,28 +36,9 @@ kotlin {
                 implementation(project(":edge_to_edge_preview_check_lib"))
             }
         }
+        androidMain.dependencies {
+            implementation(libs.compose.uiTooling)
+        }
     }
 
-}
-
-android {
-    namespace = "de.drick.compose.multiplatform_preview_test"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-
-    compileSdk = Versions.compileSdk
-
-    defaultConfig {
-        minSdk = 21
-        targetSdk = Versions.compileSdk
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
-    buildFeatures {
-        compose = true
-    }
 }

@@ -1,6 +1,7 @@
 package de.drick.compose.edgetoedgepreviewlib
 
 import android.content.res.Configuration
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -235,7 +236,7 @@ fun EdgeToEdgeTemplateImpl(
                     backgroundAlpha = if (cfg.isNavigationBarContrastEnforced) 0.5f else 0f
                 )
             }
-            if (cfg.showInsetsBorder) {
+            if (cfg.showInsetsBorder && Build.VERSION.SDK_INT >= 30) {
                 HighlightInsets(windowInsets)
             }
         }

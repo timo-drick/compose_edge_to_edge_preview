@@ -13,12 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.local.compose.icons.Icons_AutoMirrored_Filled_ArrowBack
 import androidx.local.compose.icons.Icons_Filled_Close
 import androidx.local.compose.icons.Icons_Filled_Menu
 import androidx.local.compose.icons.Icons_Filled_Minimize
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Preview(name = "Caption bar")
 @Composable

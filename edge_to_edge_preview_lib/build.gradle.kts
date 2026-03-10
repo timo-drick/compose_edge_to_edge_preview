@@ -1,15 +1,16 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+@file:OptIn(ExperimentalWasmDsl::class)
+
 import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.SourcesJar
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.compose")
-    id("org.jetbrains.compose")
-    id("com.android.library")
-    id("com.autonomousapps.dependency-analysis")
-    id("com.vanniktech.maven.publish") version Versions.vanniktechPlugin
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.autonomousappsDependencyAnalysis)
+    alias(libs.plugins.vanniktechMavenPublish)
 }
 
 val mavenGroupId = Versions.mavenGroupId
@@ -23,7 +24,10 @@ kotlin {
 
     jvm()
 
-    androidTarget("android")
+    android {
+        namespace = "de.drick.compose.edgetoedgepreviewlib"
+        compileSdk = Versions.compileSdk
+    }
 
     listOf(
         iosX64(),
@@ -36,7 +40,7 @@ kotlin {
         }
     }
 
-    @OptIn(ExperimentalWasmDsl::class) wasmJs() { browser() }
+    wasmJs() { browser() }
 
     js { browser() }
 
@@ -45,17 +49,17 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(compose.runtime)
-            implementation(compose.ui)
-            implementation(compose.foundation)
-            implementation(compose.ui)
-            implementation(compose.components.uiToolingPreview)
+            api(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.uiToolingPreview)
+
         }
 
         // Android targets
         androidMain.dependencies {
-            implementation(compose.uiTooling)
-            api("androidx.core:core:${Versions.coreKtx}")
+            api(libs.androidx.coreKtx)
+            implementation(libs.compose.uiTooling)
         }
 
         // NonAndroid targets (JVM, JS, Native)
@@ -69,37 +73,17 @@ kotlin {
     }
 }
 
-android {
-    namespace = "de.drick.compose.edgetoedgepreviewlib"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-
-    compileSdk = Versions.compileSdk
-    defaultConfig {
-        minSdk = 21
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
-    buildFeatures {
-        compose = true
-    }
-}
-
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
 
 mavenPublishing {
     configure(
         KotlinMultiplatform(
-            sourcesJar = true,
+            sourcesJar = SourcesJar.Sources(),
             androidVariantsToPublish = listOf("release")
         )
     )
-    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
-    signAllPublications()
+    publishToMavenCentral(automaticRelease = true)
+    //signAllPublications()
 
     coordinates(mavenGroupId, mavenArtifactId, mavenVersion)
 
