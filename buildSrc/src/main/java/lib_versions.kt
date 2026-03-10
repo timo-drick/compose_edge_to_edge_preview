@@ -1,5 +1,5 @@
 object Versions {
-    const val mavenLib = "0.9.0"
+    const val mavenLib = "0.8.0"
     const val mavenGroupId = "de.drick.compose"
 
     const val benManesPlugin = "0.51.0" // Check for lib updates
