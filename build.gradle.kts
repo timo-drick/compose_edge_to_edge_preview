@@ -9,8 +9,7 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.versionCatalogUpdate) // Check for dependency updates
     alias(libs.plugins.autonomousappsDependencyAnalysis)
-
-    kotlin("plugin.serialization") version Versions.kotlin
+    alias(libs.plugins.kotlinxSerialization)
     id("app.cash.paparazzi") version Versions.paparazzi apply false
     id("com.android.lint") version "9.1.0" apply false
 }

@@ -19,8 +19,8 @@ import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.foundation.layout.systemGestures
 import androidx.compose.foundation.layout.tappableElement
 import androidx.compose.foundation.layout.tappableElementIgnoringVisibility
-import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntSize
 import androidx.core.view.WindowInsetsCompat
 
@@ -91,7 +91,8 @@ fun getTestWindowInsets(): TestWindowInsets {
             isVisible = WindowInsets.isTappableElementVisible
         )
     )
-    val size = currentWindowSize()
+
+    val size = LocalWindowInfo.current.containerSize
     return TestWindowInsets(
         windowSize = size,
         insetList = insetList

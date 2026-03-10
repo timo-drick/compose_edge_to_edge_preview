@@ -1,6 +1,7 @@
 package de.drick.compose.devicerecording
 
 import android.content.Context
+import android.graphics.Path
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -22,15 +23,16 @@ import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.foundation.layout.systemGestures
 import androidx.compose.foundation.layout.tappableElement
 import androidx.compose.foundation.layout.tappableElementIgnoringVisibility
-import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowInsetsCompat
-import de.drick.compose.edgetoedgepreviewlib.NavigationMode
+import de.drick.compose.edgetoedgetestlib.navigationMode
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -111,15 +113,9 @@ data class RecordedInsets(
     val windowHeight: Int,// screen height in pixel
     val density: Float,   // screen density
     val orientation: Int,
-    val navigationMode: NavigationMode,
+    val navigationMode: String,
     val insetList: List<InsetEntry>
 )
-
-fun Context.navigationMode(): NavigationMode =
-    if (Settings.Secure.getInt(contentResolver, "navigation_mode", -1) == 2)
-        NavigationMode.Gesture
-    else
-        NavigationMode.ThreeButton
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -189,7 +185,7 @@ fun recordInsets(
     val manufacturer = Build.MANUFACTURER
     val model = Build.MODEL
     val apiLevel = Build.VERSION.SDK_INT
-    val size = currentWindowSize()
+    val size = LocalWindowInfo.current.containerSize
     val orientation = LocalConfiguration.current.orientation
     val density = LocalDensity.current.density
     val navigationMode = LocalContext.current.navigationMode()
@@ -202,7 +198,7 @@ fun recordInsets(
         windowHeight = size.height,
         density = density,
         orientation = orientation,
-        navigationMode = navigationMode ?: NavigationMode.ThreeButton,
+        navigationMode = navigationMode,
         insetList = insetList
     )
 }

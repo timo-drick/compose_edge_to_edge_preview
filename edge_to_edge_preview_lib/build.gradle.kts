@@ -83,7 +83,7 @@ mavenPublishing {
         )
     )
     publishToMavenCentral(automaticRelease = true)
-    //signAllPublications()
+    signAllPublications()
 
     coordinates(mavenGroupId, mavenArtifactId, mavenVersion)
 

@@ -1,18 +1,18 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("plugin.compose")
-    kotlin("plugin.serialization")
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 android {
     namespace = "de.drick.compose.devicerecording"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "de.drick.compose.devicerecording"
-        minSdk = 21
-        targetSdk = 35
+        minSdk = 23
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -32,17 +32,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -54,31 +48,31 @@ android {
 dependencies {
 
     implementation(project(":edge_to_edge_preview_lib"))
+    implementation(project(":edge_to_edge_test_lib"))
 
-    implementation("androidx.core:core-ktx:${Versions.coreKtx}")
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.uiToolingPreview)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}")
+    implementation(libs.androidx.coreKtx)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
-    implementation("androidx.activity:activity-compose:${Versions.activityCompose}")
-    val composeBom = platform("androidx.compose:compose-bom:${Versions.composeBom}")
-    implementation(composeBom)
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material3.adaptive:adaptive")
+    implementation(libs.kotlinx.serialization.json)
 
-    lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.activity.compose)
+
+    //lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
+    debugImplementation(libs.compose.uiTooling)
+    debugImplementation(libs.androidx.composeUiTestManifest)
 
     //Testing
-    testImplementation("junit:junit:${Versions.junit}")
+    //testImplementation("junit:junit:${Versions.junit}")
 
-    androidTestImplementation(project(":edge_to_edge_test_lib"))
-    androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
-    androidTestImplementation(composeBom)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(libs.androidx.uiautomator)
+    androidTestImplementation(libs.androidx.composeUiTest)
+
+    //androidTestImplementation("androidx.test.services:storage:1.6.0") // Used to store bitmaps in TestStorage
+    //androidTestImplementation("androidx.test.services:test-services:1.6.0")
 }

@@ -1,4 +1,5 @@
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SourcesJar
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -75,13 +76,13 @@ kotlin {
 
 mavenPublishing {
     configure(
-        KotlinMultiplatform( //TODO
-            sourcesJar = true,
+        KotlinMultiplatform(
+            sourcesJar = SourcesJar.Sources(),
             androidVariantsToPublish = listOf("release")
         )
     )
     publishToMavenCentral(automaticRelease = true)
-    //signAllPublications()
+    signAllPublications()
 
     coordinates(mavenGroupId, mavenArtifactId, mavenVersion)
 
