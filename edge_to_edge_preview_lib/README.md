@@ -4,7 +4,7 @@
 
 A Compose Multiplatform library for creating previews with edge-to-edge designs (WindowInsets simulation) in Android Studio and IntelliJ IDEA.
 
-It now also supports the preview in Compose Multiplatform 1.9.0 and newer. But please note that the IDE will still use the Android preview system for rendering the preview. So everything should work the same as in a Android only project. But of course the limitations of the builtin Multiplatform Preview are there. (Only works when a Android target is defined in the project)
+It now also supports the preview in Compose Multiplatform 1.10.1 and newer. But please note that the IDE will still use the Android preview system for rendering the preview. So everything should work the same as in a Android only project. But of course the limitations of the builtin Multiplatform Preview are there. (Only works when a Android target is defined in the project)
 
 ## Features
 
@@ -28,34 +28,40 @@ dependencies {
 
 ### Multiplatform Project
 
+The more elaborated Android previews are supported since Compose Multiplatform version 1.10.1
+So you need at least 1.10.1
+
 Add to your `build.gradle.kts`:
 
 ```kotlin
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.compose")
+    id("org.jetbrains.kotlin.multiplatform")
     id("org.jetbrains.compose")
-    id("com.android.application") // or com.android.library
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.android.kotlin.multiplatform.library")
 }
 
 kotlin {
-    // Define your targets
-    androidTarget("android")
-    jvm("desktop")
+    // Android target necessary to be able to use previews
+    android {
+        namespace = "de.drick.compose.multiplatform_preview_test"
+        compileSdk = 36
+    }
     // ... other targets
     
     sourceSets {
         commonMain {
             dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.ui)
-                implementation(compose.material3)
-                implementation(compose.components.uiToolingPreview)
+                // your compose libs
+
+                implementation("org.jetbrains.compose.ui:ui-tooling-preview:1.10.1")
                 
                 // Add edge-to-edge-preview library
                 implementation("de.drick.compose:edge-to-edge-preview:<version>")
             }
+        }
+        androidMain.dependencies {
+            implementation(libs.compose.uiTooling)
         }
     }
 }
@@ -91,10 +97,8 @@ fun PreviewEdgeToEdge() {
 
 ### Multiplatform Preview
 
-For multiplatform projects, use the Compose Multiplatform preview annotation:
-
 ```kotlin
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 import de.drick.compose.edgetoedgepreviewlib.CameraCutoutMode
