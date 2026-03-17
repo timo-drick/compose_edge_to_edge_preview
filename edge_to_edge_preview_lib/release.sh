@@ -1,7 +1,3 @@
-#export OSSRH_USER=xxx
-#export OSSRH_PASSWORD=xxx
-printenv | grep OSSRH
-#../gradlew :edge_to_edge_preview_lib:publishReleasePublicationToOSSRHRepository
-
-# Using the com.vanniktech.maven.publish plugin
-#./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+export ORG_GRADLE_PROJECT_mavenCentralUsername=xxx
+export ORG_GRADLE_PROJECT_mavenCentralPassword=yyyyyy
+./gradlew :edge_to_edge_preview_lib:publishAndReleaseToMavenCentral
