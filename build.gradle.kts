@@ -7,11 +7,13 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.androidMultiplatformLibrary) apply false
     alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.versionCatalogUpdate) // Check for dependency updates
     alias(libs.plugins.autonomousappsDependencyAnalysis)
     alias(libs.plugins.kotlinxSerialization)
-    id("app.cash.paparazzi") version Versions.paparazzi apply false
-    id("com.android.lint") version "9.1.0" apply false
+    alias(libs.plugins.paparazzi) apply false
+    alias(libs.plugins.androidLint) apply false
+    alias(libs.plugins.previewScreenshotTest) apply false
 }
 
 versionCatalogUpdate {

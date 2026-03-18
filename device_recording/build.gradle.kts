@@ -61,7 +61,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activityCompose)
 
     //lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
     debugImplementation(libs.compose.uiTooling)

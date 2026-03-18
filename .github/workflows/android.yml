@@ -30,3 +30,7 @@ jobs:
 
       - name: Lint check
         run: ./gradlew lint
+
+      - name: Preview screenshot tests
+        run: ./gradlew :preview_screenshot_test:validateScreenshotTest
+

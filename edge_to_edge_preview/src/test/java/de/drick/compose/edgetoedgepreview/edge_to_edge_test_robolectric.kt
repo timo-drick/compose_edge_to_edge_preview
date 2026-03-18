@@ -37,34 +37,38 @@ private val testQualifiersList = listOf(
     "w640dp-h360dp-xxhdpi"
 )
 
-@Config(sdk = [34])
+data class TestConfig(
+    val qualifiers: String,
+    val invertedOrientation: TestInvertedOrientation,
+    val navigationMode: NavigationMode
+)
+
+@Config(sdk = [36])
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class EdgeToEdgeTestRobolectric(
-    private val testQualifiers: String,
-    private val testInvertedOrientation: TestInvertedOrientation,
-    private val navigationMode: NavigationMode
+    private val config: TestConfig
 ) {
-
     companion object {
         @JvmStatic
-        @ParameterizedRobolectricTestRunner.Parameters(name = "{0},{1},{2}")
+        @ParameterizedRobolectricTestRunner.Parameters
         fun data() = buildList {
             testQualifiersList.forEach { qualifiers ->
                 TestInvertedOrientation.entries.forEach { inverted ->
-                    add(arrayOf(qualifiers, inverted, NavigationMode.ThreeButton))
-                    add(arrayOf(qualifiers, inverted, NavigationMode.Gesture))
+                    add(TestConfig(qualifiers, inverted, NavigationMode.ThreeButton))
+                    add(TestConfig(qualifiers, inverted, NavigationMode.Gesture))
                 }
             }
         }
     }
 
-    @get:Rule val composeTestRule = createComposeRule()
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
         ShadowLog.stream = System.out // Redirect Logcat to console
-        RuntimeEnvironment.setQualifiers(testQualifiers)
+        RuntimeEnvironment.setQualifiers(config.qualifiers)
     }
 
     @Test
@@ -72,12 +76,10 @@ class EdgeToEdgeTestRobolectric(
     fun testWindowInsets() {
         composeTestRule.setContent {
             EdgeToEdgeTemplate(
-                modifier = Modifier
-                    .testTag("edge_to_edge"),
-                navMode = navigationMode,
+                modifier = Modifier.testTag("edge_to_edge"),
+                navMode = config.navigationMode,
                 cameraCutoutMode = CameraCutoutMode.End,
-                isInvertedOrientation = testInvertedOrientation == TestInvertedOrientation.INVERTED,
-                useHiddenApiHack = true, //TODO make it work without this hack.
+                isInvertedOrientation = config.invertedOrientation == TestInvertedOrientation.INVERTED
             ) {
                 SemanticsWindowInsetsAnchor()
                 ComposeLibrariesTheme {
@@ -85,13 +87,12 @@ class EdgeToEdgeTestRobolectric(
                 }
             }
         }
-        val base = "screenshot_${testQualifiers}_$testInvertedOrientation"
+        val base = "screenshot_${config.qualifiers}_${config.invertedOrientation}"
         composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                screenshotBaseName = base,
-                isRobolectricTest = true
+                //screenshotBaseName = base,
             )
         composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToBottom()
@@ -99,8 +100,7 @@ class EdgeToEdgeTestRobolectric(
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .assertWindowInsets(
                 insetType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-                screenshotBaseName = "${base}_scrolled",
-                isRobolectricTest = true
+                //screenshotBaseName = "${base}_scrolled",
             )
         /*composeTestRule
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))

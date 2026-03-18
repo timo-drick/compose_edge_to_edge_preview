@@ -17,16 +17,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import de.drick.compose.edgetoedgepreview.TestComponentWindowInsets
+import com.android.tools.screenshot.PreviewTest
 import de.drick.compose.edgetoedgepreviewlib.CameraCutoutMode
 import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
+import de.drick.compose.multiplatform_preview_test.TestComponentWindowInsets
 
 @Preview(name = "portrait", device = "spec:width=300dp,height=600dp,dpi=440")
 @Preview(name = "landscape", device = "spec:width=300dp,height=600dp,dpi=440,orientation=landscape")
-annotation class TestPreviews
+annotation class DevicePreviews
 
-@TestPreviews
+@PreviewTest
+@DevicePreviews
 @Composable
 private fun PreviewEdgeToEdgePortrait() {
     EdgeToEdgeTemplate(
@@ -38,7 +40,8 @@ private fun PreviewEdgeToEdgePortrait() {
     }
 }
 
-@TestPreviews
+@PreviewTest
+@DevicePreviews
 @Composable
 private fun PreviewEdgeToEdgePortrait2() {
     EdgeToEdgeTemplate(
@@ -50,7 +53,8 @@ private fun PreviewEdgeToEdgePortrait2() {
     }
 }
 
-@TestPreviews
+@PreviewTest
+@DevicePreviews
 @Composable
 private fun PreviewEdgeToEdgePortrait3() {
     EdgeToEdgeTemplate(

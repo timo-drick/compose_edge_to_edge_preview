@@ -41,19 +41,30 @@ import org.robolectric.annotation.GraphicsMode
 import java.io.File
 
 /**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * Example how to include window insets into robolectric tests
  */
+@Config(sdk = [36])
 @RunWith(RobolectricTestRunner::class)
 class ExampleUnitTest {
 
-    @get:Rule val composeTestRule = createComposeRule()
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(qualifiers = "w360dp-h640dp-xxhdpi")
     @Test
-    fun addition_isCorrect() {
+    fun testPortrait() {
+        test("portrait")
+    }
+
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "w640dp-h360dp-xxhdpi")
+    @Test
+    fun testLandscape() {
+        test("landscape")
+    }
+
+    fun test(name: String) {
         composeTestRule.setContent {
             EdgeToEdgeTemplate(
                 modifier = Modifier.fillMaxSize().testTag("edge_to_edge"),
@@ -69,8 +80,8 @@ class ExampleUnitTest {
         val bitmap = composeTestRule.onNodeWithTag("edge_to_edge")
             .captureToImage()
             .asAndroidBitmap()
-            //.writeToTestStorage("testImage1")
-        File("screenshot.png").outputStream().use {
+        //.writeToTestStorage("testImage1")
+        File("screenshot_$name.png").outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
         }
     }
