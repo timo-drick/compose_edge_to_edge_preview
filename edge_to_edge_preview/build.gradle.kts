@@ -69,6 +69,7 @@ android {
 dependencies {
 
     implementation(project(":edge_to_edge_preview_lib"))
+    implementation(project(":edge_to_edge_test_lib"))
     implementation(project(":edge_to_edge_preview_check_lib"))
 
     implementation(libs.androidx.coreKtx)
@@ -97,6 +98,7 @@ dependencies {
     testImplementation(libs.androidx.composeUiTest)
     testImplementation(libs.androidx.runner)
 
+    api(libs.androidx.composeUiTest)
 
     // Android device tests
     androidTestImplementation(project(":edge_to_edge_test_lib"))
