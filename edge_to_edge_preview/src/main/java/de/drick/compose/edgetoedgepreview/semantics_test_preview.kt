@@ -2,6 +2,7 @@ package de.drick.compose.edgetoedgepreview
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.safeDrawing
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -58,7 +60,9 @@ private fun SemanticsTest(content: @Composable () -> Unit) {
                 onAllNodes(hasClickAction())
                     .checkOverlap(WindowInsets.safeContent)
             }
-            content()
+            Surface(Modifier.fillMaxSize()) {
+                content()
+            }
         }
     }
 }

@@ -1,3 +1,6 @@
+/*
+//Not working because of incompatibility with agp 9+
+
 package de.drick.compose.edgetoedgepreview
 
 import androidx.compose.runtime.CompositionLocalProvider
@@ -19,7 +22,8 @@ class EdgeToEdgeTestPaparazzi {
     private val navigationMode = NavigationMode.ThreeButton
     private val testInvertedOrientation = TestInvertedOrientation.NORMAL
 
-    @get:Rule val paparazzi = Paparazzi(
+    @get:Rule
+    val paparazzi = Paparazzi(
         deviceConfig = DeviceConfig.PIXEL_3A
     )
 
@@ -28,8 +32,7 @@ class EdgeToEdgeTestPaparazzi {
         paparazzi.snapshot {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 EdgeToEdgeTemplate(
-                    modifier = Modifier
-                        .testTag("edge_to_edge"),
+                    modifier = Modifier.testTag("edge_to_edge"),
                     navMode = navigationMode,
                     cameraCutoutMode = CameraCutoutMode.End,
                     isInvertedOrientation = testInvertedOrientation == TestInvertedOrientation.INVERTED,
@@ -43,3 +46,4 @@ class EdgeToEdgeTestPaparazzi {
         }
     }
 }
+*/

@@ -28,9 +28,8 @@ kotlin {
                 implementation(libs.compose.ui)
                 implementation(libs.compose.uiToolingPreview)
                 implementation(libs.compose.materialIconsExtended)
-                // Add KMP dependencies here
 
-                api("androidx.compose.ui:ui-test:${Versions.composeMultiplatform}")
+                api(libs.androidx.composeUiTest)
 
                 implementation(project(":edge_to_edge_preview_lib"))
                 implementation(project(":edge_to_edge_preview_check_lib"))
