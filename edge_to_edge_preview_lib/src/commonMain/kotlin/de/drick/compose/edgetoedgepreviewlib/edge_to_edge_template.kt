@@ -44,7 +44,6 @@ data class InsetsConfig(
     val captionBarMode: InsetMode = InsetMode.Off,
     val captionBarSize: Dp = 42.dp,
     val gestureNavSize: Dp = 30.dp,
-    val useHiddenApiHack: Boolean = false
 ) {
     companion object {
         val Default = InsetsConfig()
@@ -78,7 +77,6 @@ fun EdgeToEdgeTemplate(
     navigationBarMode: InsetMode = InsetMode.Visible,
     isNavigationBarContrastEnforced: Boolean = true,
     captionBarMode: InsetMode = InsetMode.Off,
-    useHiddenApiHack: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val config = InsetsConfig(
@@ -89,8 +87,7 @@ fun EdgeToEdgeTemplate(
         cameraCutoutMode = cameraCutoutMode,
         isInvertedOrientation = isInvertedOrientation,
         showInsetsBorder = showInsetsBorder,
-        isNavigationBarContrastEnforced = isNavigationBarContrastEnforced,
-        useHiddenApiHack = useHiddenApiHack
+        isNavigationBarContrastEnforced = isNavigationBarContrastEnforced
     )
     EdgeToEdgeTemplate(
         modifier = modifier,

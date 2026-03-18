@@ -73,7 +73,6 @@ fun BaseLayout(
         navMode = NavigationMode.Gesture,
         cameraCutoutMode = CameraCutoutMode.Middle,
         showInsetsBorder = true,
-        useHiddenApiHack = false,
         isNavigationBarContrastEnforced = false
     ) {
         Box(

@@ -1,12 +1,10 @@
 import org.gradle.internal.classpath.Instrumented.systemProperty
 
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("plugin.compose")
-    kotlin("plugin.serialization")
-    id("com.android.compose.screenshot")
-    id("app.cash.paparazzi")
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
+    //alias(libs.plugins.paparazzi) // does not support agp 9+ yet
 }
 
 android {
@@ -15,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "de.drick.compose.edgetoedgepreview"
-        minSdk = 21
+        minSdk = 23
         targetSdk = Versions.compileSdk
         versionCode = 1
         versionName = "1.0"
@@ -32,22 +30,13 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
-        compose = true
+        resValues = true
     }
 
     lint {
         disable += "SlotReused" // Unfortunately this rule does produce false negatives. Not usable
     }
-
-    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     testOptions {
         animationsDisabled = false
@@ -82,35 +71,37 @@ dependencies {
     implementation(project(":edge_to_edge_preview_lib"))
     implementation(project(":edge_to_edge_preview_check_lib"))
 
-    implementation("androidx.core:core-ktx:${Versions.coreKtx}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
-    implementation("androidx.activity:activity-compose:${Versions.activityCompose}")
-    val composeBom = platform("androidx.compose:compose-bom:${Versions.composeBom}")
-    implementation(composeBom)
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material3.adaptive:adaptive:${Versions.composeAdaptive}")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.coreKtx)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.activityCompose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.toolingPreview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.adaptive)
+    implementation(libs.androidx.material.iconsExtended)
 
-    api("androidx.compose.ui:ui-test:${Versions.composeVersion}")
+    lintChecks(libs.compose.lint.checks)
+    debugImplementation(libs.androidx.ui.tooling)
 
-    lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation(libs.kotlinx.serialization.json)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}")
-
+    //Unit jvm tests
     testImplementation(project(":edge_to_edge_test_lib"))
+
+    //testImplementation("junit:junit:${Versions.junit}")
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.robolectric)
+    testImplementation(platform(libs.compose.bom))
+    testImplementation(libs.androidx.composeUiTest)
+    testImplementation(libs.androidx.runner)
+
+
+    // Android device tests
     androidTestImplementation(project(":edge_to_edge_test_lib"))
 
-    //Testing
-    testImplementation("junit:junit:${Versions.junit}")
-    testImplementation("org.robolectric:robolectric:${Versions.robolectric}")
-    testImplementation(composeBom)
-    testImplementation("androidx.compose.ui:ui-test-junit4")
-    testImplementation("androidx.test:runner:${Versions.testRunner}")
-    androidTestImplementation(composeBom)
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:${Versions.uiAutomator}")
     //androidTestImplementation("androidx.test.services:storage:1.4.2") // Used to store bitmaps in TestStorage

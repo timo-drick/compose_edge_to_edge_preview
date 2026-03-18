@@ -16,7 +16,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -24,6 +23,7 @@ include(":edge_to_edge_preview_lib")
 include(":edge_to_edge_test_lib")
 include(":edge_to_edge_preview_check_lib")
 
-//include(":edge_to_edge_preview")
+include(":edge_to_edge_preview")
 include(":device_recording")
 include(":multiplatform_preview_test")
+include(":preview_screenshot_test")
