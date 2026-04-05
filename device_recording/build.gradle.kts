@@ -5,6 +5,12 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
+configurations.all {
+    resolutionStrategy {
+        force(libs.androidx.espresso.core)
+    }
+}
+
 android {
     namespace = "de.drick.compose.devicerecording"
     compileSdk = 36
@@ -63,7 +69,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.activityCompose)
 
-    //lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}")
     debugImplementation(libs.compose.uiTooling)
     debugImplementation(libs.androidx.composeUiTestManifest)
 
@@ -72,6 +77,7 @@ dependencies {
 
     androidTestImplementation(libs.androidx.uiautomator)
     androidTestImplementation(libs.androidx.composeUiTest)
+    androidTestImplementation(libs.androidx.espresso.core)
 
     //androidTestImplementation("androidx.test.services:storage:1.6.0") // Used to store bitmaps in TestStorage
     //androidTestImplementation("androidx.test.services:test-services:1.6.0")

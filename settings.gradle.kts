@@ -22,6 +22,7 @@ dependencyResolutionManagement {
 include(":edge_to_edge_preview_lib")
 include(":edge_to_edge_test_lib")
 include(":edge_to_edge_preview_check_lib")
+include(":edge_to_edge_preview_recorded_lib")
 
 include(":edge_to_edge_preview")
 include(":device_recording")

@@ -1,19 +1,20 @@
 package de.drick.compose.devicerecording
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
-import android.os.Build
 import android.os.SystemClock
-import android.view.RoundedCorner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.core.graphics.set
 import androidx.test.core.graphics.writeToTestStorage
@@ -85,55 +86,15 @@ class RecordWindowInsets(
         val platformTestStorage = PlatformTestStorageRegistry.getInstance()
 
         var recordedInsets: RecordedInsets? = null
-        val screenshotFileName = "uiAutomatorScreenshot_${rotation}_${navigationMode}_$uiMode"
+        val fileName = "display_${rotation}_${navigationMode}_$uiMode"
 
         val backgroundColor = if (uiMode == UiMode.Dark) {
             Color.Black.copy(green = 0.001f)
         } else {
             Color.White.copy(green = 0.999f)
         }
-        var cutoutPath: Path? = null
-        var displayPath: Path? = null
-        var cornerPath: Path? = null
         composeTestRule.setContent {
-            /*initializeActivity { // Only necessary when using ComponentActivity
-                enableEdgeToEdge()
-                if (Build.VERSION.SDK_INT >= 29) {
-                    window.isNavigationBarContrastEnforced = false
-                }
-            }*/
-            recordedInsets = recordInsets("$screenshotFileName.png")
-            val width = recordedInsets.windowWidth
-            val height = recordedInsets.windowHeight
-            if (Build.VERSION.SDK_INT >= 31) {
-                LocalView.current.rootWindowInsets.apply {
-                    cutoutPath = displayCutout?.cutoutPath
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        displayPath = displayShape?.path
-                    }
-                    val topLeft = getRoundedCorner(RoundedCorner.POSITION_TOP_LEFT)?.radius ?: 0
-                    val topRight = getRoundedCorner(RoundedCorner.POSITION_TOP_RIGHT)?.radius ?: 0
-                    val bottomLeft = getRoundedCorner(RoundedCorner.POSITION_BOTTOM_LEFT)?.radius ?: 0
-                    val bottomRight = getRoundedCorner(RoundedCorner.POSITION_BOTTOM_RIGHT)?.radius ?: 0
-                    val radiusArray = arrayOf(
-                        topLeft, topLeft,
-                        topRight, topRight,
-                        bottomRight, bottomRight,
-                        bottomLeft, bottomLeft
-                    ).map { it.toFloat() }.toFloatArray()
-                    cornerPath = Path().apply {
-                        addRoundRect(
-                            0f,
-                            0f,
-                            width.toFloat(),
-                            height.toFloat(),
-                            radiusArray,
-                            Path.Direction.CW
-                        )
-                    }
-
-                }
-            }
+            recordedInsets = recordInsets("$fileName.png")
             Box(
                 Modifier
                     .fillMaxSize()
@@ -143,10 +104,11 @@ class RecordWindowInsets(
         composeTestRule.waitForIdle()
 
         SystemClock.sleep(1000)
-        
+        if (recordedInsets == null) throw IllegalStateException("Unable to record window insets!")
         val screenshot = instrumentation.uiAutomation.takeScreenshot()
-        screenshot.writeToTestStorage("${screenshotFileName}_original")
-        val width = screenshot.width
+        screenshot.writeToTestStorage(fileName)
+
+        /*val width = screenshot.width
         val height = screenshot.height
         val transparentBitmap = Bitmap.createBitmap(width, height, screenshot.config!!)
         val transparentBackground = backgroundColor.copy(alpha = 0f).toArgb()
@@ -163,52 +125,74 @@ class RecordWindowInsets(
             }
         }
         val fillPaint = Paint()
-        fillPaint.color = android.graphics.Color.BLACK
-        fillPaint.style = Paint.Style.FILL
+        fillPaint.color = Color.Black
+        fillPaint.style = PaintingStyle.Fill
         val strokePaint = Paint()
-        strokePaint.color = android.graphics.Color.WHITE
-        strokePaint.style = Paint.Style.STROKE
+        strokePaint.color = Color.White
+        strokePaint.style = PaintingStyle.Stroke
         strokePaint.strokeWidth = 4f
-        Canvas(transparentBitmap).apply {
-            cutoutPath?.let {
+        Canvas(transparentBitmap.asImageBitmap()).apply {
+            recordedInsets.displayCutoutPath?.let {
                 drawPath(it, fillPaint)
                 drawPath(it, strokePaint)
             }
-            displayPath?.let {
+            /*displayPath?.let {
                 withClipOut(it) {
                     drawColor(android.graphics.Color.BLACK)
                     drawPath(it, strokePaint)
                 }
+            }*/
+            recordedInsets.corners?.let { corners ->
+                val rect = RoundRect(
+                    left = 0f,
+                    top = 0f,
+                    right = width.toFloat(),
+                    bottom = height.toFloat(),
+                    topLeftCornerRadius = corners.topLeft.toCornerRadius(),
+                    topRightCornerRadius = corners.topRight.toCornerRadius(),
+                    bottomLeftCornerRadius = corners.bottomLeft.toCornerRadius(),
+                    bottomRightCornerRadius = corners.bottomRight.toCornerRadius()
+                )
+                val path = Path().apply {
+                    addRoundRect(
+                        roundRect = rect,
+                        direction = Path.Direction.Clockwise,
+                    )
+                }
+                withClipOut(path) {
+                    drawPath(path, fillPaint)
+                    drawPath(path, strokePaint)
+                }
             }
-            cornerPath?.let {
+            /*cornerPath?.let {
                 withClipOut(it) {
                     drawColor(android.graphics.Color.BLACK)
                     drawPath(it, strokePaint)
                 }
-            }
+            }*/
+        }
+        transparentBitmap.writeToTestStorage("${fileName}_alpha")
+        */
+        val json = Json {
+            prettyPrint = true
+        }
+        platformTestStorage.openOutputFile("$fileName.json").use { outputStream ->
+            val string = json.encodeToString(recordedInsets)
+            outputStream.write(string.toByteArray())
         }
 
-
-
-        transparentBitmap.writeToTestStorage(screenshotFileName)
-        recordedInsets?.let { insets ->
-            val json = Json {
-                prettyPrint = true
-            }
-            platformTestStorage.openOutputFile("test_${rotation}_${navigationMode}.json").use { outputStream ->
-                val string = json.encodeToString(insets)
-                outputStream.write(string.toByteArray())
-            }
-        }
     }
 }
 
 inline fun Canvas.withClipOut(clipPath: Path, block: Canvas.() -> Unit) {
-    val checkpoint = save()
-    clipOutPath(clipPath)
+    save()
+    clipPath(
+        path = clipPath,
+        clipOp = ClipOp.Difference
+    )
     try {
         block()
     } finally {
-        restoreToCount(checkpoint)
+        restore()
     }
 }
