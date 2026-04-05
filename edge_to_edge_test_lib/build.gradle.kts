@@ -35,7 +35,6 @@ kotlin {
             implementation(libs.androidx.coreKtx)
             implementation(libs.androidx.uiautomator)
             implementation(libs.androidx.composeUiTest)
-            //lintChecks("com.slack.lint.compose:compose-lint-checks:${Versions.composeLintChecks}") // https://slackhq.github.io/compose-lints
 
             //val composeBom = platform("androidx.compose:compose-bom:${Versions.composeBom}")
             //implementation(composeBom)

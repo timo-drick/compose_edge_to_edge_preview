@@ -13,6 +13,7 @@ It now also supports the preview in Compose Multiplatform 1.10.1 and newer. But 
 - Multiple device configurations (navigation modes, camera cutouts)
 - Visual insets border highlighting
 - Highly configurable preview templates
+- WindowInsetsRulers api is also simulated
 
 ## Installation
 

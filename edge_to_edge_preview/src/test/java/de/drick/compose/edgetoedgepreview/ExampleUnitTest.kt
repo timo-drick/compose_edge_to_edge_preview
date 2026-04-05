@@ -23,16 +23,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import androidx.test.core.graphics.writeToTestStorage
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import de.drick.compose.edgetoedgepreviewlib.CameraCutoutMode
 import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 import org.junit.Test
 
-import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

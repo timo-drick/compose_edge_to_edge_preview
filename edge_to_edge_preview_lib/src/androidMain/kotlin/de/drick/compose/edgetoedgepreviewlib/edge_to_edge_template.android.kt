@@ -153,7 +153,7 @@ fun EdgeToEdgeTemplateImpl(
     WindowInsetsInjector(
         windowInsets = windowInsets
     ) {
-        Box(modifier.fillMaxSize()) {
+        Box(modifier.fillMaxSize().provideWindowInsetsRulers(windowInsets)) {
             val cameraCutoutAlignment = when (cameraCutoutPos) {
                 InsetPos.LEFT -> AbsoluteAlignment.CenterLeft
                 InsetPos.TOP -> AbsoluteAlignment.TopLeft

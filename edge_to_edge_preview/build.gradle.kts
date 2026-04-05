@@ -83,7 +83,6 @@ dependencies {
     implementation(libs.androidx.adaptive)
     implementation(libs.androidx.material.iconsExtended)
 
-    lintChecks(libs.compose.lint.checks)
     debugImplementation(libs.androidx.ui.tooling)
 
     implementation(libs.kotlinx.serialization.json)
