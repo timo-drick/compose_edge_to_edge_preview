@@ -1,6 +1,6 @@
 # Edge to Edge Preview Library
 
-[![Maven Central](https://img.shields.io/maven-central/v/de.drick.compose/edge-to-edge-preview.svg)](https://mvnrepository.com/artifact/de.drick.compose/edge-to-edge-preview)
+[![Maven Central](https://img.shields.io/maven-central/v/de.drick.compose/edge-to-edge-preview)](https://mvnrepository.com/artifact/de.drick.compose/edge-to-edge-preview)
 
 A Compose Multiplatform library for creating previews with edge-to-edge designs (WindowInsets simulation) in Android Studio and IntelliJ IDEA.
 
@@ -20,7 +20,7 @@ It now also supports the preview in Compose Multiplatform 1.10.1 and newer. But 
 ### Android Project
 
 Add the dependency:
-[![Maven Central](https://img.shields.io/maven-central/v/de.drick.compose/edge-to-edge-preview.svg)](https://mvnrepository.com/artifact/de.drick.compose/edge-to-edge-preview)
+[![Maven Central](https://img.shields.io/maven-central/v/de.drick.compose/edge-to-edge-preview)](https://mvnrepository.com/artifact/de.drick.compose/edge-to-edge-preview)
 ```kotlin
 dependencies {
     implementation("de.drick.compose:edge-to-edge-preview:<version>")
@@ -128,7 +128,6 @@ fun PreviewWithWindowInsets() {
         navMode = NavigationMode.Gesture,
         cameraCutoutMode = CameraCutoutMode.Middle,
         showInsetsBorder = true,
-        useHiddenApiHack = false,
         isNavigationBarContrastEnforced = false
     ) {
         Box(
