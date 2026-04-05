@@ -1,0 +1,39 @@
+# This workflow will build a package using Gradle and then publish it as a SNAPSHOT version on every push to main
+name: Publish Snapshot to Maven Central
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docu/**'
+
+jobs:
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    if: github.repository == 'timo-drick/compose_edge_to_edge_preview'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Set Up JDK
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        cache: 'gradle'
+    - name: Change wrapper permissions
+      run: chmod +x ./gradlew
+          
+    - name: Publish Snapshot
+      run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-configuration-cache
+      env:
+        PUBLISH_SNAPSHOT: "true"
+        SNAPSHOT_BUILD_NUMBER: ${{ github.run_number }}
+        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+        ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
