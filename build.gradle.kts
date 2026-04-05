@@ -43,7 +43,7 @@ subprojects {
                 )
             )
             publishToMavenCentral(automaticRelease = true)
-            //signAllPublications()
+            signAllPublications()
 
             pom {
                 name.set("Compose edge to edge preview")
