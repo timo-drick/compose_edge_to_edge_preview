@@ -69,7 +69,7 @@ private fun SemanticsTest(content: @Composable () -> Unit) {
 
 
 @Composable
-fun TestComposable(
+private fun TestComposable(
     windowInsets: WindowInsets,
     modifier: Modifier = Modifier,
 ) {

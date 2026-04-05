@@ -19,7 +19,7 @@ import androidx.core.view.WindowInsetsCompat
 @RequiresApi(30)
 @Composable
 fun HighlightInsets(
-    windowInsets: WindowInsets,
+    windowInsets: WindowInsetsCompat,
     modifier: Modifier = Modifier,
     fill: Boolean = false
 ) {

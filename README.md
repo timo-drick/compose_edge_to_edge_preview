@@ -2,7 +2,10 @@
 
 Library which enables you to show WindowInsets in Jetpack Compose previews.
 
-## Compose Multiplatform is now also supported
+## New supported feature:
+
+- Compose Multiplatform
+- WindowInsetsRulers 
 
 Supported insets are the status bar, navigation bar and a camera display cutout. It also is able to show many different configurations of the system bars.
 
