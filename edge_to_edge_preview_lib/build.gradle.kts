@@ -76,40 +76,5 @@ kotlin {
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
 
 mavenPublishing {
-    configure(
-        KotlinMultiplatform(
-            sourcesJar = SourcesJar.Sources(),
-            androidVariantsToPublish = listOf("release")
-        )
-    )
-    publishToMavenCentral(automaticRelease = true)
-    signAllPublications()
-
     coordinates(mavenGroupId, mavenArtifactId, mavenVersion)
-
-    pom {
-        name.set("Compose edge to edge preview")
-        description.set("""
-            Create previews for edge-to-edge designs (also known as WindowInsets) with Jetpack Compose in Android Studio.
-        """.trimIndent())
-        url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
-        licenses {
-            license {
-                name = "The Unlicense"
-                url = "https://unlicense.org/"
-            }
-        }
-        developers {
-            developer {
-                id.set("timo-drick")
-                name.set("Timo Drick")
-                url.set("https://github.com/timo-drick")
-            }
-        }
-        scm {
-            url.set("https://github.com/timo-drick/compose_edge_to_edge_preview")
-            connection.set("scm:git:git://github.com/timo-drick/compose_edge_to_edge_preview.git")
-            developerConnection.set("scm:git:ssh://git@github.com/timo-drick/compose_edge_to_edge_preview.git")
-        }
-    }
 }
