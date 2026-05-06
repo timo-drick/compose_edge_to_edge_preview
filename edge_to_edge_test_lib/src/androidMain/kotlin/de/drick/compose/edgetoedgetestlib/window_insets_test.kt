@@ -24,9 +24,9 @@ var SemanticsPropertyReceiver.windowInsets by WindowInsetsKey
 fun SemanticsNodeInteraction.assertWindowInsets(
     @InsetsType insetType: Int,
     /**
-     * When a node is inside a vertical scrollable area only the horizontal sides are checked.
-     * But if the content is fully scrolled down the top side is also checked.
-     * And if the content is fully scrolled up the bottom side is also checked.
+     * When a node is inside a vertical scrollable area, only the horizontal sides are checked.
+     * But if the content is fully scrolled down, the top side is also checked.
+     * And if the content is fully scrolled up, the bottom side is also checked.
      * Horizontal scroll areas not supported yet!
      */
     excludeVerticalScrollSides: Boolean = true,
@@ -98,7 +98,7 @@ fun SemanticsNodeInteractionCollection.assertWindowInsets(
 }
 
 data class OverlapResultItem(
-    @InsetsType val insetType: Int,
+    @param:InsetsType val insetType: Int,
     val node: SemanticsNode,
     val nodeBounds: Rect,
     val insetBounds: List<Rect>,
