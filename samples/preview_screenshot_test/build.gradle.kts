@@ -24,7 +24,7 @@ android {
 
 dependencies {
     implementation(project(":edge_to_edge_preview_lib"))
-    implementation(project(":multiplatform_preview_test"))
+    implementation(project(":samples:multiplatform_preview_test"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.ui)

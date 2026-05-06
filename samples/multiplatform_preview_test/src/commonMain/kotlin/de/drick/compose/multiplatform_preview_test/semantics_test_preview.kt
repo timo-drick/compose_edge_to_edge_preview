@@ -25,6 +25,7 @@ import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
 import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 
 
+@Preview(widthDp = 891, heightDp = 411)
 @Preview(widthDp = 411, heightDp = 891)
 @Composable
 private fun SemanticsUnsafePreview() {
@@ -32,6 +33,7 @@ private fun SemanticsUnsafePreview() {
         TestComposable(WindowInsets.navigationBars)
     }
 }
+@Preview(widthDp = 891, heightDp = 411)
 @Preview(widthDp = 411, heightDp = 891)
 @Composable
 private fun SemanticsSafeDrawingPreview() {
@@ -39,6 +41,7 @@ private fun SemanticsSafeDrawingPreview() {
         TestComposable(WindowInsets.safeDrawing)
     }
 }
+@Preview(widthDp = 891, heightDp = 411)
 @Preview(widthDp = 411, heightDp = 891)
 @Composable
 private fun SemanticsSafeContentPreview() {
