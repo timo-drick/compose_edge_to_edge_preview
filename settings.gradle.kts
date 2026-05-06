@@ -12,7 +12,6 @@ plugins {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
@@ -23,7 +22,7 @@ include(":edge_to_edge_preview_lib")
 include(":edge_to_edge_test_lib")
 include(":edge_to_edge_preview_check_lib")
 
-include(":edge_to_edge_preview")
+include(":samples:edge_to_edge_preview")
 include(":device_recording")
-include(":multiplatform_preview_test")
-include(":preview_screenshot_test")
+include(":samples:multiplatform_preview_test")
+include(":samples:preview_screenshot_test")

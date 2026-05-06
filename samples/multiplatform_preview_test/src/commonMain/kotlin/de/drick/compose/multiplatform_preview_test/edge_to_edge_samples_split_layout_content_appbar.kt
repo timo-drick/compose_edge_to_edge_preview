@@ -24,11 +24,13 @@ import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 
 @Preview(
     name = "portrait",
+    group = "portrait",
     widthDp = 300,
     heightDp = 600,
 )
 @Preview(
     name = "landscape",
+    group = "landscape",
     widthDp = 600,
     heightDp = 300,
 )
@@ -92,7 +94,7 @@ private fun PreviewEdgeToEdgePortraitDesktop() {
 }
 
 @Composable
-fun PreviewContentAppBar() {
+private fun PreviewContentAppBar() {
     if (isLandscape()) {
         SampleLandscapeContentAppBar()
     } else {
@@ -102,7 +104,7 @@ fun PreviewContentAppBar() {
 
 
 @Composable
-fun SamplePortraitContentAppBar(
+private fun SamplePortraitContentAppBar(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -133,7 +135,7 @@ fun SamplePortraitContentAppBar(
 }
 
 @Composable
-fun SampleLandscapeContentAppBar(
+private fun SampleLandscapeContentAppBar(
     modifier: Modifier = Modifier
 ) {
     Row(
