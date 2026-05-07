@@ -2,6 +2,8 @@
 
 Library which enables you to show WindowInsets in Jetpack Compose previews.
 
+> Note: AI agent optimization has been integrated. Integration-focused agent skills are now available under `ai_skills/` (see `ai_skills/README.md`) for `edge_to_edge_preview_lib`, `edge_to_edge_test_lib`, and `edge_to_edge_preview_check_lib`.
+
 ## New supported feature:
 
 - Compose Multiplatform
