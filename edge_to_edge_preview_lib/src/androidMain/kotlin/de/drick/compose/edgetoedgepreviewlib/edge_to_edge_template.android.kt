@@ -72,6 +72,7 @@ fun EdgeToEdgeTemplateImpl(
     val captionBarSize = with(LocalDensity.current) { captionBarHeightDp.roundToPx() }
 
     val systemGestureHorizontalSize = with(LocalDensity.current) { cfg.gestureNavSize.roundToPx() }
+    val imeSize = with(LocalDensity.current) { cfg.imeSize.roundToPx() }
 
     val windowInsets = buildInsets {
         var insets = Insets.of(0,0,0,0)
@@ -111,6 +112,16 @@ fun EdgeToEdgeTemplateImpl(
                 isVisible = true
             )
             insets = insets.union(captionBarInsets)
+        }
+        if (cfg.imeMode != InsetMode.Off) {
+            // On real devices the ime inset is measured from the bottom of the screen,
+            // so it already covers the navigation bar and is not added on top of it.
+            setInset(
+                pos = InsetPos.BOTTOM,
+                type = InsetType.IME,
+                size = imeSize,
+                isVisible = cfg.imeMode == InsetMode.Visible
+            )
         }
         setInset(
             left = insets.left,
@@ -234,6 +245,18 @@ fun EdgeToEdgeTemplateImpl(
                     isDarkMode = isDarkMode,
                     navMode = cfg.navMode,
                     backgroundAlpha = if (cfg.isNavigationBarContrastEnforced) 0.5f else 0f
+                )
+            }
+            if (cfg.imeMode == InsetMode.Visible) {
+                ImeKeyboard(
+                    size = cfg.imeSize,
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+                        .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+                        .align(Alignment.BottomCenter)
+                        .zIndex(1002f)
+                        .clearAndSetSemantics { },
+                    isDarkMode = isDarkMode
                 )
             }
             if (cfg.showInsetsBorder && Build.VERSION.SDK_INT >= 30) {

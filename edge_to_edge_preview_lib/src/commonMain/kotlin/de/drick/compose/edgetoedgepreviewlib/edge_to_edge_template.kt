@@ -44,6 +44,14 @@ data class InsetsConfig(
     val captionBarMode: InsetMode = InsetMode.Off,
     val captionBarSize: Dp = 42.dp,
     val gestureNavSize: Dp = 30.dp,
+    /**
+     * Simulates an open on-screen keyboard (IME).
+     * [InsetMode.Visible] sets the ime inset and shows a keyboard placeholder.
+     * [InsetMode.Hidden] behaves like on a real device when the keyboard is closed
+     * (ime inset is 0 and not visible), so it is effectively the same as [InsetMode.Off].
+     */
+    val imeMode: InsetMode = InsetMode.Off,
+    val imeSize: Dp = 250.dp,
 ) {
     companion object {
         val Default = InsetsConfig()
@@ -77,6 +85,7 @@ fun EdgeToEdgeTemplate(
     navigationBarMode: InsetMode = InsetMode.Visible,
     isNavigationBarContrastEnforced: Boolean = true,
     captionBarMode: InsetMode = InsetMode.Off,
+    imeMode: InsetMode = InsetMode.Off,
     content: @Composable () -> Unit
 ) {
     val config = InsetsConfig(
@@ -84,6 +93,7 @@ fun EdgeToEdgeTemplate(
         statusBarMode = statusBarMode,
         navigationBarMode = navigationBarMode,
         captionBarMode = captionBarMode,
+        imeMode = imeMode,
         cameraCutoutMode = cameraCutoutMode,
         isInvertedOrientation = isInvertedOrientation,
         showInsetsBorder = showInsetsBorder,

@@ -105,7 +105,11 @@ fun buildInsets(block: InsetsDsl.() -> Unit): WindowInsetsCompat  {
             if (isVisible) {
                 builder.setInsets(type.getTypeMask(), insets)
             }
-            builder.setInsetsIgnoringVisibility(type.getTypeMask(), insets)
+            // setInsetsIgnoringVisibility is not defined for the IME type and
+            // throws an IllegalArgumentException on API 30+
+            if (type != InsetType.IME) {
+                builder.setInsetsIgnoringVisibility(type.getTypeMask(), insets)
+            }
             builder.setVisible(type.getTypeMask(), isVisible)
             return insets
         }

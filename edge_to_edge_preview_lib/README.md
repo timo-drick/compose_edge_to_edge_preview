@@ -11,6 +11,7 @@ It now also supports the preview in Compose Multiplatform 1.10.1 and newer. But 
 - Simulate WindowInsets in Compose previews
 - Multiplatform support
 - Multiple device configurations (navigation modes, camera cutouts)
+- On-screen keyboard (IME) simulation with a keyboard placeholder
 - Visual insets border highlighting
 - Highly configurable preview templates
 - WindowInsetsRulers api is also simulated
@@ -147,6 +148,37 @@ fun PreviewWithWindowInsets() {
 }
 ```
 
+### On-screen keyboard (IME)
+
+Simulate an open on-screen keyboard to preview and screenshot-test layouts
+that use `Modifier.imePadding()` or `WindowInsets.ime`:
+
+```kotlin
+@Preview
+@Composable
+fun PreviewWithKeyboard() {
+    EdgeToEdgeTemplate(
+        cfg = InsetsConfig(
+            imeMode = InsetMode.Visible,
+            //imeSize = 250.dp // optional, 250.dp is the default
+        )
+    ) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+                .imePadding()
+        ) {
+            MessageList(modifier = Modifier.weight(1f))
+            MessageInputField()
+        }
+    }
+}
+```
+
+`WindowInsets.isImeVisible` will be `true` and the keyboard placeholder is drawn
+above the navigation bar, like a real IME.
+
 ## Configuration Options
 
 ### NavigationMode
@@ -172,6 +204,7 @@ fun PreviewWithWindowInsets() {
 - `statusBarMode` - Status bar visibility mode (InsetMode)
 - `navigationBarMode` - Navigation bar visibility mode (InsetMode)
 - `captionBarMode` - Caption bar visibility mode (InsetMode, default: `InsetMode.Off`)
+- `imeMode` - On-screen keyboard (IME) simulation (InsetMode, default: `InsetMode.Off`). The keyboard size can be changed with `InsetsConfig(imeSize = ...)`
 - `isInvertedOrientation` - Invert device orientation (in landscape: camera cutout on right, nav buttons on left)
 - `isNavigationBarContrastEnforced` - Enforce navigation bar contrast (Android only)
 - `useHiddenApiHack` - Enable hidden API workarounds (Android only)
