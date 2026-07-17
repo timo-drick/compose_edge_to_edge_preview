@@ -1,5 +1,5 @@
 object Versions {
-    private const val libVersion = "0.9.0"
+    private const val libVersion = "0.10.0"
     val mavenLib: String
         get() = if (System.getenv("PUBLISH_SNAPSHOT") == "true") {
             val buildNumber = System.getenv("SNAPSHOT_BUILD_NUMBER")
