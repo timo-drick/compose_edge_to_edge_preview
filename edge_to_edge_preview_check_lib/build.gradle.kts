@@ -25,6 +25,7 @@ kotlin {
     android {
         namespace = "de.drick.compose.edgetoedgepreviewchecklib"
         compileSdk = Versions.compileSdk
+        minSdk = Versions.minSdk
     }
 
     listOf(
