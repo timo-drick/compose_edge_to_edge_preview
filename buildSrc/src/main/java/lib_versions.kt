@@ -14,6 +14,7 @@ object Versions {
     const val mavenGroupId = "de.drick.compose"
 
     const val compileSdk = 36
+    const val minSdk = 23
 
     const val uiAutomator = "2.4.0-alpha06"
 }
