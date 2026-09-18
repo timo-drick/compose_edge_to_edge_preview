@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "de.drick.compose.devicerecording"
-    compileSdk = 36
+    compileSdk = Versions.compileSdk
 
     defaultConfig {
         applicationId = "de.drick.compose.devicerecording"
-        minSdk = 23
-        targetSdk = 36
+        minSdk = Versions.minSdk
+        targetSdk = Versions.compileSdk
         versionCode = 1
         versionName = "1.0"
 

@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "de.drick.compose.edgetoedgepreview"
-        minSdk = 23
+        minSdk = Versions.minSdk
         targetSdk = Versions.compileSdk
         versionCode = 1
         versionName = "1.0"
