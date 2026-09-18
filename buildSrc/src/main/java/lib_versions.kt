@@ -1,5 +1,5 @@
 object Versions {
-    private const val libVersion = "0.10.0"
+    private const val libVersion = "0.10.1"
     val mavenLib: String
         get() = if (System.getenv("PUBLISH_SNAPSHOT") == "true") {
             val buildNumber = System.getenv("SNAPSHOT_BUILD_NUMBER")
@@ -13,7 +13,7 @@ object Versions {
         }
     const val mavenGroupId = "de.drick.compose"
 
-    const val compileSdk = 36
+    const val compileSdk = 37
     const val minSdk = 23
 
     const val uiAutomator = "2.4.0-alpha06"

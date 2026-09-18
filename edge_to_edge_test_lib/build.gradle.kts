@@ -18,7 +18,7 @@ kotlin {
     android {
         namespace = "de.drick.compose.edgetoedgetestlib"
         compileSdk = Versions.compileSdk
-        minSdk = 23
+        minSdk = Versions.minSdk
     }
 
     sourceSets {
