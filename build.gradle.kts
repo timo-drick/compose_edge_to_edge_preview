@@ -43,7 +43,10 @@ subprojects {
                 )
             )
             publishToMavenCentral(automaticRelease = true)
-            signAllPublications()
+            // Local development machines do not need signing keys to publish to Maven Local.
+            if (providers.gradleProperty("signingInMemoryKey").isPresent) {
+                signAllPublications()
+            }
 
             pom {
                 name.set("Compose edge to edge preview")
