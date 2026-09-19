@@ -69,6 +69,26 @@ kotlin {
 }
 ```
 
+`ui-tooling` is required at runtime for Android Studio to render KMP previews. It declares
+`PreviewActivity`, which is not needed in a production app. Remove that activity from the final
+Android application's release manifest (not the KMP library manifest):
+
+```xml
+<!-- app/src/release/AndroidManifest.xml -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application>
+        <activity
+            android:name="androidx.compose.ui.tooling.PreviewActivity"
+            tools:node="remove" />
+    </application>
+</manifest>
+```
+
+This preserves the activity in the debug build used by Android Studio previews while excluding it
+from release APKs. Enable code shrinking for release builds to also remove the now-unreachable
+tooling classes.
+
 ## Usage
 
 ### Basic Android Preview

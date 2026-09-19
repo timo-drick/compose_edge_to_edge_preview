@@ -156,7 +156,8 @@ Minimum verification checklist:
    - Verify Android target is configured in the KMP module.
 2. **Unresolved preview/tooling classes**
    - Add `ui-tooling-preview` to `commonMain`.
-   - Add `ui-tooling` to `androidMain`.
+    - Add `ui-tooling` to `androidMain`.
+    - In the final Android application's release manifest, remove `androidx.compose.ui.tooling.PreviewActivity` with `tools:node="remove"`.
 3. **Insets appear wrong in test preview**
    - Confirm `statusBarMode` / `navigationBarMode` are not accidentally set to `Off`.
    - Temporarily enable `showInsetsBorder = true` to debug.

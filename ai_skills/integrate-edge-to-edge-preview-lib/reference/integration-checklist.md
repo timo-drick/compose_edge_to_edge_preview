@@ -7,6 +7,7 @@ Use this checklist after applying the integration skill.
 - [ ] If KMP: dependency is in `commonMain`.
 - [ ] If KMP: `ui-tooling-preview` exists in `commonMain`.
 - [ ] If KMP: `ui-tooling` exists in `androidMain`.
+- [ ] If KMP: the final Android application's release manifest removes `androidx.compose.ui.tooling.PreviewActivity`.
 - [ ] If KMP: Android target exists in the same module.
 - [ ] At least one `@Preview` wraps content in `EdgeToEdgeTemplate`.
 - [ ] At least one non-default variant is present (e.g., `NavigationMode.Gesture`, `CameraCutoutMode.Middle`, `InsetMode.Hidden`, `showInsetsBorder = true`).
