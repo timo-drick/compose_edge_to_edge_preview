@@ -60,7 +60,6 @@ kotlin {
         // Android targets
         androidMain.dependencies {
             api(libs.androidx.coreKtx)
-            implementation(libs.compose.uiTooling)
         }
 
         // NonAndroid targets (JVM, JS, Native)
